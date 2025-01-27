@@ -45,17 +45,22 @@ start-local-container: create-podman-network stop-local-container build-docker-i
 		podman run -d \
 		--name $(APPNAME) \
 		--network $(NETWORK_NAME) \
-		-p 8080:8080 \
+		-p 8082:8080 \
 		-e TZ=UTC \
-		-e LOGSTASH_ENABLED="true" \
+		-e LOGSTASH_ENABLED="false" \
 		-e LOGSTASH_HOST=$(LOGSTASH_HOST) \
 		-e LOGSTASH_PORT=$(LOGSTASH_PORT) \
-		-e TRACING_ENABLED="true" \
+		-e TRACING_ENABLED="false" \
 		-e TRACING_URL=http://$(JAEGER_HOST):$(JAEGER_TRACING_PORT)/v1/traces \
 		-e SPRING_DATASOURCE_URL=jdbc:mariadb://evocelot-mariadb:3306/filestore \
 		-e SPRING_DATASOURCE_USERNAME=root \
 		-e SPRING_DATASOURCE_PASSWORD=admin \
 		-e SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.mariadb.jdbc.Driver \
+		-e BUFFER_SIZE=8192 \
+		-v ./stored-files:/store \
+  		--cpus="0.5" \
+  		--memory="512m" \
+  		--memory-swap="512m" \
 		$(IMAGE_NAME); \
 		\
 		echo "$(APPNAME) started at: http://localhost:8080\nThe swagger UI can be accessed at: http://localhost:8080/swagger-ui/index.html")
@@ -79,6 +84,9 @@ start-elk-stack: create-podman-network stop-elk-stack
 		-e "discovery.type=single-node" \
 		-e "xpack.security.enabled=false" \
 		-e "xpack.security.http.ssl.enabled=false" \
+  		--cpus="0.5" \
+  		--memory="1024m" \
+  		--memory-swap="1024m" \
 		elasticsearch:8.17.0; \
 		\
 		echo "elasticsearch can be accessed at: http://localhost:9200")
@@ -93,6 +101,9 @@ start-elk-stack: create-podman-network stop-elk-stack
 		-p 9600:9600 \
 		-e TZ=UTC \
 		-v ./elk/logstash/pipeline:/usr/share/logstash/pipeline \
+  		--cpus="0.2" \
+  		--memory="1024m" \
+  		--memory-swap="1024m" \
 		logstash:8.16.2; \
 		\
 		echo "Logstash can be accessed at: http://localhost:5000")
@@ -125,6 +136,9 @@ start-observability: create-podman-network stop-observability
 		-p $(JAEGER_TRACING_PORT):4317 \
 		-e TZ=UTC \
 		-e COLLECTOR_OTLP_ENABLED=true \
+  		--cpus="0.5" \
+  		--memory="64m" \
+  		--memory-swap="64m" \
 		jaegertracing/all-in-one:1.64.0; \
 		\
 		echo "Jaeger can be accessed at: http://localhost:16686")
@@ -137,6 +151,9 @@ start-observability: create-podman-network stop-observability
 		-p 9090:9090 \
 		-e TZ=UTC \
 		-v ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml \
+  		--cpus="0.2" \
+  		--memory="64m" \
+  		--memory-swap="64m" \
 		prom/prometheus:v3.0.1; \
 		\
 		echo "Prometheus can be accessed at: http://localhost:9090")
@@ -150,6 +167,9 @@ start-observability: create-podman-network stop-observability
 		-e TZ=UTC \
 		-e "GF_SECURITY_ADMIN_PASSWORD=admin" \
 		-v ./observability/grafana/provisioning:/etc/grafana/provisioning \
+  		--cpus="0.2" \
+  		--memory="128m" \
+  		--memory-swap="128m" \
 		grafana/grafana:11.4.0; \
 		\
 		echo "Grafana can be accessed at: http://localhost:3000")
