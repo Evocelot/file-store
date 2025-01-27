@@ -36,6 +36,7 @@ dependencies {
     implementation group: 'com.google.guava', name: 'guava', version: '33.0.0-jre'
     implementation group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '3.5.1'
     implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.7.0'
+    implementation group: 'org.codehaus.janino', name: 'janino', version: '3.0.7'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 

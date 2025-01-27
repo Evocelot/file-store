@@ -1,6 +1,8 @@
 # FileStore
 
-...
+`FileStore` is a scalable microservice designed for the efficient central storage of files. Built with a focus on performance and reliability, provides a robust solution for managing file storage in distributed environments. Its architecture ensures scalability, making it suitable for both small-scale applications and large systems. Designed as an independent microservice, `FileStore` can be easily integrated into complex infrastructures, offering a reliable and flexible approach to centralized file management.
+
+The starter project: `springboot - microbase` is an open-source starter project for quickly building `scalable` and `maintainable` Spring Boot-based microservices. For more details: [Evocelot/springboot-microbase](https://github.com/Evocelot/springboot-microbase).
 
 ## Technologies used
 
@@ -40,8 +42,8 @@ This command starts the following containers:
 - grafana
 - sample-module
 
-By default, the tickr-module runs on port `8080`.
-The swagger UI can be accessed at: http://localhost:8080/swagger-ui/index.html
+By default, the file-store-module runs on port `8082`.
+The swagger UI can be accessed at: http://localhost:8082/swagger-ui/index.html
 
 ### Run the module only
 
@@ -52,6 +54,10 @@ make start-local-container
 ```
 
 > **_NOTE:_** To disable log collection and tracing, manually set the `LOGSTASH_ENABLED` and `TRACING_ENABLED` environment variables to `"false"` in the `Makefile`.
+
+## Reaching the files
+
+When starting the service, it is possible to mount the directory where you want to save the uploaded files as a `volume`. This can be configured in the volume definition section of the `Makefile`. Inside the container, the files will be saved in the `/store` directory.
 
 ## Logging
 

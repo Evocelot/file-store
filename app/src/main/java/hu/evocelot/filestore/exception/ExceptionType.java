@@ -20,4 +20,14 @@ public enum ExceptionType {
      * {@value}.
      */
     SAMPLE_ENTITY_NOT_FOUND,
+
+    /**
+     * {@value}.
+     */
+    CANNOT_SAVE_FILE,
+
+    /**
+     * {@value}.
+     */
+    INVALID_INPUT,
 }

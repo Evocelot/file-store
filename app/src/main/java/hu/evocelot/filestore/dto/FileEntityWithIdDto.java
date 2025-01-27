@@ -1,15 +1,14 @@
 package hu.evocelot.filestore.dto;
 
-import hu.evocelot.filestore.model.SampleEntity;
+import hu.evocelot.filestore.model.FileEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
- * DTO class for {@link SampleEntity} base details with id.
+ * DTO class for {@link FileEntity} base details with id.
  * 
  * @author mark.danisovszky
  */
-public class SampleEntityWithIdDto extends SampleEntityDto {
-
+public class FileEntityWithIdDto extends FileEntityDto {
     @Schema(description = "Unique identifier of the sample entity", required = true)
     private String id;
 
