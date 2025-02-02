@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import hu.evocelot.filestore.action.DownloadFileAction;
+import hu.evocelot.filestore.action.GetFileDetailsAction;
 import hu.evocelot.filestore.action.UploadFileAction;
 import hu.evocelot.filestore.dto.FileEntityWithIdDto;
 import hu.evocelot.filestore.dto.FileUploadRequestDto;
@@ -29,6 +30,9 @@ public class FileController {
 
 	@Autowired
 	private UploadFileAction uploadFileAction;
+
+	@Autowired
+	private GetFileDetailsAction getFileDetailsAction;
 
 	@Autowired
 	private DownloadFileAction downloadFileAction;
@@ -51,6 +55,25 @@ public class FileController {
 	public ResponseEntity<FileEntityWithIdDto> uploadFile(@ModelAttribute FileUploadRequestDto fileUploadRequestDto)
 			throws Exception {
 		return uploadFileAction.uploadFile(fileUploadRequestDto);
+	}
+
+	/**
+	 * Retrieves metadata details of a file.
+	 * <p>
+	 * This endpoint allows clients to fetch details about a file by providing its
+	 * unique identifier.
+	 * </p>
+	 * 
+	 * @param fileId The unique identifier of the file.
+	 * @return {@link ResponseEntity} containing the file's metadata.
+	 * @throws Exception If an error occurs while retrieving file details.
+	 */
+	@GetMapping
+	@Operation(summary = FileControllerInformation.GET_FILE_DETAILS_SUMMARY, description = FileControllerInformation.GET_FILE_DETAILS_DESCRIPTION)
+	public ResponseEntity<FileEntityWithIdDto> getFileDetails(
+			@Parameter(description = FileControllerInformation.FILE_ID_PARAM_DESCRIPTION, required = true) @RequestParam String fileId)
+			throws Exception {
+		return getFileDetailsAction.getFileDetails(fileId);
 	}
 
 	/**
