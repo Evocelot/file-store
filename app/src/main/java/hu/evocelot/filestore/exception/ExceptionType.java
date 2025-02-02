@@ -19,7 +19,7 @@ public enum ExceptionType {
     /**
      * {@value}.
      */
-    SAMPLE_ENTITY_NOT_FOUND,
+    FILE_ENTITY_NOT_FOUND,
 
     /**
      * {@value}.
@@ -30,4 +30,19 @@ public enum ExceptionType {
      * {@value}.
      */
     INVALID_INPUT,
+
+    /**
+     * {@value}.
+     */
+    CANNOT_READ_FILE,
+
+    /**
+     * {@value}.
+     */
+    CORRUPTED_FILE,
+
+    /**
+     * {@value}.
+     */
+    CANNOT_CALCULATE_MD5,
 }

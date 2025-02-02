@@ -47,10 +47,10 @@ start-local-container: create-podman-network stop-local-container build-docker-i
 		--network $(NETWORK_NAME) \
 		-p 8082:8080 \
 		-e TZ=UTC \
-		-e LOGSTASH_ENABLED="false" \
+		-e LOGSTASH_ENABLED="true" \
 		-e LOGSTASH_HOST=$(LOGSTASH_HOST) \
 		-e LOGSTASH_PORT=$(LOGSTASH_PORT) \
-		-e TRACING_ENABLED="false" \
+		-e TRACING_ENABLED="true" \
 		-e TRACING_URL=http://$(JAEGER_HOST):$(JAEGER_TRACING_PORT)/v1/traces \
 		-e SPRING_DATASOURCE_URL=jdbc:mariadb://evocelot-mariadb:3306/filestore \
 		-e SPRING_DATASOURCE_USERNAME=root \
@@ -63,7 +63,7 @@ start-local-container: create-podman-network stop-local-container build-docker-i
   		--memory-swap="512m" \
 		$(IMAGE_NAME); \
 		\
-		echo "$(APPNAME) started at: http://localhost:8080\nThe swagger UI can be accessed at: http://localhost:8080/swagger-ui/index.html")
+		echo "$(APPNAME) started at: http://localhost:8082\nThe swagger UI can be accessed at: http://localhost:8082/swagger-ui/index.html")
 
 # Stops the local container.
 stop-local-container:

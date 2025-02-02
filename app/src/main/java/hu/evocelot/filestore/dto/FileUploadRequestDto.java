@@ -17,9 +17,6 @@ public class FileUploadRequestDto {
     @Schema(description = "The extension of the file (e.g., png, jpg, pdf)", required = true, maxLength = 10)
     private String extension;
 
-    @Schema(description = "MD5 hash of the file", required = false, maxLength = 32)
-    private String hash;
-
     @Schema(description = "ID of the connected entity (internal owner of the file)", required = false, maxLength = 100)
     private String objectId;
 
@@ -43,14 +40,6 @@ public class FileUploadRequestDto {
 
     public void setExtension(String extension) {
         this.extension = extension;
-    }
-
-    public String getHash() {
-        return hash;
-    }
-
-    public void setHash(String hash) {
-        this.hash = hash;
     }
 
     public String getObjectId() {

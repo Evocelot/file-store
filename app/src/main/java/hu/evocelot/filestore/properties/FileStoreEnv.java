@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
- * For reading the relevant ENVs.
+ * Class for reading the relevant project ENVs.
  * 
  * @author mark.danisovszky
  */
