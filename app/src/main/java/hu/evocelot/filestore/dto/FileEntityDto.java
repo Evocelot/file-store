@@ -4,7 +4,7 @@ import hu.evocelot.filestore.model.FileEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
- * DTO class for {@link FileEntity} base details.
+ * Base DTO class for {@link FileEntity}.
  * 
  * @author mark.danisovszky
  */

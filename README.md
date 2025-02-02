@@ -17,6 +17,13 @@ The starter project: `springboot - microbase` is an open-source starter project 
 - Prometheus
 - Grafana
 
+## Prerequisites
+
+To ensure the application functions correctly, you must first `start the database container`. The database will store the metadata required for file storage and retrieval.
+
+To set up the database container properly, the following project will assist you: [Evocelot/file-store-liquibase](https://github.com/Evocelot/file-store-liquibase)
+
+The `file-store-liquibase` project helps start the appropriate database container and create the necessary database schema.
 
 ## How to run:
 
@@ -58,6 +65,8 @@ make start-local-container
 ## Reaching the files
 
 When starting the service, it is possible to mount the directory where you want to save the uploaded files as a `volume`. This can be configured in the volume definition section of the `Makefile`. Inside the container, the files will be saved in the `/store` directory.
+
+In the current project, you can find the uploaded files in the `/stored-files` folder.
 
 ## Logging
 

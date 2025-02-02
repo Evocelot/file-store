@@ -7,7 +7,7 @@ import hu.evocelot.filestore.model.FileEntity;
 
 /**
  * Converter class that handles conversion between {@link FileEntity} and
- * {@link FileEntityDto}.
+ * {@link FileEntityFullDto}.
  * 
  * @author mark.danisovszky
  */

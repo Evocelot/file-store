@@ -1,11 +1,14 @@
 package hu.evocelot.filestore.helper;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -21,8 +24,7 @@ import hu.evocelot.filestore.properties.FileStoreProperties;
 import jakarta.xml.bind.annotation.adapters.HexBinaryAdapter;
 
 /**
- * Utility class for handling file storage operations, such as saving files,
- * building file paths, and creating directories.
+ * Helper class for handling file storage operations.
  * 
  * @author mark.danisovszky
  */
@@ -55,22 +57,69 @@ public class FileHelper {
 
         MessageDigest messageDigest = MessageDigest.getInstance(MD5_DIGEST);
 
-        try (DigestInputStream DigestInputStream = new DigestInputStream(inputStream, messageDigest);
+        try (DigestInputStream digestInputStream = new DigestInputStream(inputStream, messageDigest);
                 FileOutputStream fileOutputStream = new FileOutputStream(fullPath);) {
 
             byte[] buffer = new byte[fileStoreEnv.getBufferSize()];
             int bytesRead;
-            while ((bytesRead = DigestInputStream.read(buffer)) != -1) {
+            while ((bytesRead = digestInputStream.read(buffer)) != -1) {
                 fileOutputStream.write(buffer, 0, bytesRead);
             }
 
             LOG.info("File successfully saved at: " + fullPath);
         } catch (IOException e) {
-            throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR, ExceptionType.CANNOT_SAVE_FILE, e.getMessage());
+            throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR, ExceptionType.CANNOT_READ_FILE, e.getMessage());
         }
 
         byte[] hashBytes = messageDigest.digest();
         return (new HexBinaryAdapter()).marshal(hashBytes);
+    }
+
+    /**
+     * Calculates the hash of the file.
+     * 
+     * @param fullPath the full path where the file can be located.
+     * @return the MD5 hash of the file content.
+     * @throws BaseException            if we cannot calculate MD5 hash.
+     * @throws NoSuchAlgorithmException if we cannot create MessageDigest.
+     */
+    public String getFileHash(String fullPath) throws BaseException, NoSuchAlgorithmException {
+        MessageDigest messageDigest = MessageDigest.getInstance(MD5_DIGEST);
+
+        try (DigestInputStream digestInputStream = new DigestInputStream(new FileInputStream(fullPath),
+                messageDigest);) {
+
+            byte[] buffer = new byte[fileStoreEnv.getBufferSize()];
+            while (digestInputStream.read(buffer) != -1) {
+                // Read next buffer.
+            }
+        } catch (IOException e) {
+            throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR, ExceptionType.CANNOT_CALCULATE_MD5,
+                    e.getMessage());
+        }
+
+        byte[] hashBytes = messageDigest.digest();
+        return (new HexBinaryAdapter()).marshal(hashBytes);
+    }
+
+    /**
+     * Reads the file into the output stream.
+     * 
+     * @param fullPath     the path of the file.
+     * @param outputStream the target output stream to write the file content.
+     * @throws BaseException if we cannot read the file.
+     */
+    public void getFile(String fullPath, OutputStream outputStream) throws BaseException {
+        try (InputStream inputStream = new FileInputStream(fullPath)) {
+
+            byte[] buffer = new byte[fileStoreEnv.getBufferSize()];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+        } catch (IOException e) {
+            throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR, ExceptionType.CANNOT_READ_FILE, e.getMessage());
+        }
     }
 
     /**

@@ -4,7 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 /**
- * Properties class for reading file-store-related environment variables.
+ * Properties class for reading file-store-related properties value.
  * 
  * @author mark.danisovszky
  */

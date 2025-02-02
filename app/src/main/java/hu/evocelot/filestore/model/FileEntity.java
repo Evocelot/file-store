@@ -34,7 +34,7 @@ public class FileEntity extends AbstractIdentifiedAuditEntity {
     /**
      * MD5 hash of the file
      */
-    @Column(name = "hash", length = 32, nullable = false)
+    @Column(name = "hash", length = 32, nullable = true)
     @Size(max = 32)
     private String hash;
 

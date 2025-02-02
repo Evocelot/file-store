@@ -1,7 +1,5 @@
 package hu.evocelot.filestore.action;
 
-import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,8 +52,16 @@ public class UploadFileAction {
      * @throws Exception if an error occurs during file upload or processing.
      */
     public ResponseEntity<FileEntityWithIdDto> uploadFile(FileUploadRequestDto fileUploadRequestDto) throws Exception {
+        // Create the entity.
+        FileEntity fileEntity = new FileEntity();
+        fileEntity.setName(fileUploadRequestDto.getName());
+        fileEntity.setExtension(fileUploadRequestDto.getExtension());
+        fileEntity.setObjectId(fileUploadRequestDto.getObjectId());
+        fileEntity.setSystemId(fileUploadRequestDto.getSystemId());
+        fileEntity = fileService.save(fileEntity);
+
         // Create the base details of the file.
-        String filename = UUID.randomUUID().toString();
+        String filename = fileEntity.getId();
         String directoryPath = fileHelper.getDirectoryPath(fileUploadRequestDto.getSystemId());
         String fullPath = fileHelper.getFullPath(directoryPath, filename,
                 fileUploadRequestDto.getExtension());
@@ -64,12 +70,7 @@ public class UploadFileAction {
         fileHelper.createDirectoryIfNotExists(directoryPath);
         String md5Hash = fileHelper.storeFile(fullPath, fileUploadRequestDto.getFile().getInputStream());
 
-        // Create the entity.
-        FileEntity fileEntity = new FileEntity();
-        fileEntity.setName(fileUploadRequestDto.getName());
-        fileEntity.setExtension(fileUploadRequestDto.getExtension());
-        fileEntity.setObjectId(fileUploadRequestDto.getObjectId());
-        fileEntity.setSystemId(fileUploadRequestDto.getSystemId());
+        // Update the entity.
         fileEntity.setHash(md5Hash);
         fileEntity = fileService.save(fileEntity);
 
