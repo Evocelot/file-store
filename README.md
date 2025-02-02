@@ -17,6 +17,13 @@ The starter project: `springboot - microbase` is an open-source starter project 
 - Prometheus
 - Grafana
 
+## Prerequisites
+
+To ensure the application functions correctly, you must first `start the database container`. The database will store the metadata required for file storage and retrieval.
+
+To set up the database container properly, the following project will assist you: [Evocelot/file-store-liquibase](https://github.com/Evocelot/file-store-liquibase)
+
+The `file-store-liquibase` project helps start the appropriate database container and create the necessary database schema.
 
 ## How to run:
 
