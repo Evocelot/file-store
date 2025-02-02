@@ -59,6 +59,8 @@ make start-local-container
 
 When starting the service, it is possible to mount the directory where you want to save the uploaded files as a `volume`. This can be configured in the volume definition section of the `Makefile`. Inside the container, the files will be saved in the `/store` directory.
 
+In the current project, you can find the uploaded files in the `/stored-files` folder.
+
 ## Logging
 
 The project utilizes the `ELK stack` for `centralized log collection` and monitoring:

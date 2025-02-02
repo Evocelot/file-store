@@ -24,6 +24,23 @@ SPRING_DATASOURCE_PASSWORD | admin | The password for connecting to the DBMS. |
 SPRING_DATASOURCE_DRIVER_CLASS_NAME | org.mariadb.jdbc.Driver | The fully qualified name of the JDBC driver class used for the DBMS connection. |
 BUFFER_SIZE | 8192 | The size of the buffer determines the size of the chunks in which we read files into memory. The smaller its value, the more we load the CPU during file processing, but the less we burden the RAM.
 
+## Volumes
+
+You can mount the directory where you want to store the uploaded files as a volume for the application.
+Within the application, you need to bind that directory to the `/store` path to access your files.
+
+For example:
+
+```bash
+podman run \
+    --name filestore \
+    -p 8082:8080 \
+    -v ./stored-files:/store \
+    evocelot/filestore:1.0.0 \
+```
+
+According to the example, you will find the uploaded files in the `/stored-files` directory on your local computer.
+
 ## local.env
 
 The project includes a file named `local.env`, which stores the application details.
@@ -42,7 +59,6 @@ make build-docker-image
 ```
 
 This command reads the configuration from the `local.env` file, builds the Docker image with the specified settings, and tags it according to the `APPNAME` and `VERSION` values in the configuration.
-
 
 ## Loggin request and response details.
 
