@@ -5,7 +5,6 @@ The architectural design of the application is detailed in the diagram provided.
 
 ![architecture.drawio](architecture.drawio.png)  
 
-
 ## Environment variables
 
 The following environment variables can be configured when running the application:
@@ -18,6 +17,9 @@ LOGSTASH_HOST | logstash | The name of the logstash container to push the logs f
 LOGSTASH_PORT | 5000 | The port of the logstash container. It is only required when the `LOGSTASH_ENABLED` environemnt variable is `"true"`. |
 TRACING_ENABLED | "true" | Enable or disable tracing (`"true"` or `"false"`). |
 TRACING_URL | http://jaeger:4318/v1/traces | The url of the jaeger instance for sending tracing details. It is only required when the `TRACING_ENABLED` environemnt variable is `"true"`. |
+KAFKA_ENABLED | "true" | If set to `"true"` messages about file operations (such as successful uploads) will be sent to the appropriate Kafka topic. |
+KAFKA_URL | evocelot-kafka:9092 | The url of the kafka instance.
+KAFKA_GROUP_ID | file-group | The id of the kafka group.
 SPRING_DATASOURCE_URL | jdbc:mariadb://evocelot-mariadb:3306/sample | The JDBC URL of the DBMS to connect to. |
 SPRING_DATASOURCE_USERNAME | root | The username for connecting to the DBMS. |
 SPRING_DATASOURCE_PASSWORD | admin | The password for connecting to the DBMS. |
@@ -40,6 +42,60 @@ podman run \
 ```
 
 According to the example, you will find the uploaded files in the `/stored-files` directory on your local computer.
+
+## Kafka topic configuration
+
+If the `KAFKA_ENABLED` environment variable is set to `"true"`, the following event will be triggered.
+
+### file-saved
+
+Upon a successful file upload, the metadata of the uploaded file will be published to the `file-saved` topic in JSON format. All file metadata will be included in the message, allowing the associated module to easily identify which object the uploaded file belongs to (`objectId`).
+
+Example message:
+```json
+{
+	"id": "005d24ec-06ff-48fc-b885-918a3ef9f35a",
+	"insDate": "2025-02-20T16:24:28.445605948Z",
+	"insUser": "unknown",
+	"modDate": "2025-02-20T16:24:28.541182597Z",
+	"modUser": "unknown",
+	"version": 2,
+	"name": "test",
+	"extension": "pdf",
+	"hash": "F97754C1321D159ADFAD80E1EDB0568B",
+	"objectId": "35hg24ec-06ff-48fc-b925-918a3ef9ju76",
+	"systemId": ""
+}
+```
+
+## Logging
+
+The project utilizes the `ELK stack` for `centralized log collection` and monitoring:
+
+- Logstash: Extracts logs from the application and forwards them to Elasticsearch.
+- Elasticsearch: Stores, indexes, and makes the application's logs searchable.
+- Kibana: Provides a user interface for managing the logs stored in Elasticsearch.
+
+> **_NOTE:_** To enable log forwarding to Logstash, set the `LOGSTASH_ENABLED` environment variable to `"true"` in the container’s startup configuration.
+
+View logs in Kibana:
+![View logs in Kibana](img/kibana.png)
+
+## Monitoring
+
+The project integrates the following tools for monitoring and observability:
+
+- Jaeger: Collects and displays tracing information.
+- Prometheus: Collects and stores application metrics.
+- Grafana: Visualizes metrics in an intuitive interface.
+
+> **_NOTE:_** To enable tracing collection, set the `TRACING__ENABLED` environment variable to `"true"` in the container’s startup configuration.
+
+View tracing informations in Jaeger:
+![View tracing informations in Jaeger](img/jaeger.png)
+
+App monitoring in Grafana:
+![App monitoring in Grafana](img/grafana.png)
 
 ## local.env
 

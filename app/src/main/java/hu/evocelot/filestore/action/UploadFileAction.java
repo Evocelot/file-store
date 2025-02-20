@@ -5,11 +5,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import hu.evocelot.filestore.converter.FileEntityWithIdConverter;
 import hu.evocelot.filestore.dto.FileEntityWithIdDto;
 import hu.evocelot.filestore.dto.FileUploadRequestDto;
 import hu.evocelot.filestore.helper.FileHelper;
+import hu.evocelot.filestore.kafka.KafkaMessageProducer;
+import hu.evocelot.filestore.kafka.KafkaTopics;
 import hu.evocelot.filestore.model.FileEntity;
+import hu.evocelot.filestore.properties.KafkaProperties;
 import hu.evocelot.filestore.service.FileService;
 
 /**
@@ -43,6 +48,15 @@ public class UploadFileAction {
     @Autowired
     private FileHelper fileHelper;
 
+    @Autowired
+    private KafkaProperties kafkaProperties;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired(required = false)
+    private KafkaMessageProducer kafkaMessageProducer;
+
     /**
      * Handles the logic for processing a file upload.
      * 
@@ -73,6 +87,11 @@ public class UploadFileAction {
         // Update the entity.
         fileEntity.setHash(md5Hash);
         fileEntity = fileService.save(fileEntity);
+
+        if (kafkaProperties.getKafkaEnabled().equals("true")) {
+            String json = objectMapper.writeValueAsString(fileEntity);
+            kafkaMessageProducer.sendMessage(KafkaTopics.FILE_SAVED, json);
+        }
 
         // Create the response.
         FileEntityWithIdDto response = fileEntityWithIdConverter.convert(fileEntity);

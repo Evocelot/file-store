@@ -42,7 +42,7 @@ build-docker-image:
 start-local-container: create-podman-network stop-local-container build-docker-image
 	@echo "Starting the local podman container"
 	$(call run-with-output-indent,\
-		podman run -d \
+		podman run \
 		--name $(APPNAME) \
 		--network $(NETWORK_NAME) \
 		-p 8082:8080 \
@@ -52,6 +52,9 @@ start-local-container: create-podman-network stop-local-container build-docker-i
 		-e LOGSTASH_PORT=$(LOGSTASH_PORT) \
 		-e TRACING_ENABLED="true" \
 		-e TRACING_URL=http://$(JAEGER_HOST):$(JAEGER_TRACING_PORT)/v1/traces \
+		-e KAFKA_ENABLED="true" \
+		-e KAFKA_URL=evocelot-kafka:9092 \
+		-e KAFKA_GROUP_ID=file-group \
 		-e SPRING_DATASOURCE_URL=jdbc:mariadb://evocelot-mariadb:3306/filestore \
 		-e SPRING_DATASOURCE_USERNAME=root \
 		-e SPRING_DATASOURCE_PASSWORD=admin \
@@ -84,9 +87,9 @@ start-elk-stack: create-podman-network stop-elk-stack
 		-e "discovery.type=single-node" \
 		-e "xpack.security.enabled=false" \
 		-e "xpack.security.http.ssl.enabled=false" \
-  		--cpus="0.5" \
-  		--memory="1024m" \
-  		--memory-swap="1024m" \
+  		--cpus="0.8" \
+  		--memory="2048m" \
+  		--memory-swap="2048m" \
 		elasticsearch:8.17.0; \
 		\
 		echo "elasticsearch can be accessed at: http://localhost:9200")
@@ -101,9 +104,9 @@ start-elk-stack: create-podman-network stop-elk-stack
 		-p 9600:9600 \
 		-e TZ=UTC \
 		-v ./elk/logstash/pipeline:/usr/share/logstash/pipeline \
-  		--cpus="0.2" \
-  		--memory="1024m" \
-  		--memory-swap="1024m" \
+  		--cpus="0.5" \
+  		--memory="2048m" \
+  		--memory-swap="2048m" \
 		logstash:8.16.2; \
 		\
 		echo "Logstash can be accessed at: http://localhost:5000")
@@ -179,6 +182,57 @@ stop-observability:
 	$(call run-with-output-indent,\
 		podman rm -f jaeger prometheus grafana)
 
-all: create-podman-network build-docker-image start-elk-stack start-observability start-local-container
+
+# Starts local kafka container.
+start-kafka: stop-kafka
+	@echo "Starting zookeeper container"
+	$(call run-with-output-indent,\
+		podman run -d \
+			--name evocelot-zookeeper \
+			--network $(NETWORK_NAME) \
+			-e TZ=UTC \
+			-e ZOOKEEPER_CLIENT_PORT=2181 \
+			-e ZOOKEEPER_TICK_TIME=2000 \
+			-p 2181:2181 \
+			confluentinc/cp-zookeeper:7.9.0; \
+		\
+		echo "Zookeeper can be accessed at: http://localhost:2181")
+
+	@echo "Starting kafka container"
+	$(call run-with-output-indent,\
+		podman run -d \
+			--name evocelot-kafka \
+			--network $(NETWORK_NAME) \
+			-e TZ=UTC \
+			-e KAFKA_BROKER_ID=1 \
+			-e KAFKA_ZOOKEEPER_CONNECT=evocelot-zookeeper:2181 \
+			-e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://evocelot-kafka:9092 \
+			-e KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092 \
+			-e KAFKA_LOG_DIRS=/var/lib/kafka/data \
+			-e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 \
+			-p 9092:9092 \
+			confluentinc/cp-kafka:7.9.0; \
+		\
+		echo "Kafka can be accessed at: http://localhost:9092")
+
+	@echo "Starting kafka ui container"
+	$(call run-with-output-indent,\
+		podman run -d \
+			--name evocelot-kafka-ui \
+			--network $(NETWORK_NAME) \
+			-e TZ=UTC \
+			-e DYNAMIC_CONFIG_ENABLED=true \
+			-p 9093:8080 \
+			provectuslabs/kafka-ui:v0.7.2; \
+		\
+		echo "Kafka ui can be accessed at: http://localhost:9093")
+
+# Stops kafka containers.
+stop-kafka:
+	@echo "Stopping Kafka tools"
+	$(call run-with-output-indent,\
+		podman rm -f evocelot-zookeeper evocelot-kafka evocelot-kafka-ui)
+
+all: create-podman-network build-docker-image start-elk-stack start-observability start-kafka start-local-container
 
 stop-all: stop-elk-stack stop-observability stop-local-container

@@ -47,6 +47,9 @@ This command starts the following containers:
 - jaeger
 - prometheus
 - grafana
+- kafka
+- zookeeper
+- kafka-ui
 - sample-module
 
 By default, the file-store-module runs on port `8082`.
@@ -60,7 +63,7 @@ To run only the module only:
 make start-local-container
 ```
 
-> **_NOTE:_** To disable log collection and tracing, manually set the `LOGSTASH_ENABLED` and `TRACING_ENABLED` environment variables to `"false"` in the `Makefile`.
+> **_NOTE:_** To disable log collection, tracing and communication via kafka, manually set the `LOGSTASH_ENABLED`,  `TRACING_ENABLED` and `KAFKA_ENABLED` environment variables to `"false"` in the `Makefile`.
 
 ## Reaching the files
 
@@ -68,34 +71,9 @@ When starting the service, it is possible to mount the directory where you want 
 
 In the current project, you can find the uploaded files in the `/stored-files` folder.
 
-## Logging
+## Docker Images
 
-The project utilizes the `ELK stack` for `centralized log collection` and monitoring:
-
-- Logstash: Extracts logs from the application and forwards them to Elasticsearch.
-- Elasticsearch: Stores, indexes, and makes the application's logs searchable.
-- Kibana: Provides a user interface for managing the logs stored in Elasticsearch.
-
-> **_NOTE:_** To enable log forwarding to Logstash, set the `LOGSTASH_ENABLED` environment variable to `"true"` in the container’s startup configuration.
-
-View logs in Kibana:
-![View logs in Kibana](img/kibana.png)
-
-## Monitoring
-
-The project integrates the following tools for monitoring and observability:
-
-- Jaeger: Collects and displays tracing information.
-- Prometheus: Collects and stores application metrics.
-- Grafana: Visualizes metrics in an intuitive interface.
-
-> **_NOTE:_** To enable tracing collection, set the `TRACING__ENABLED` environment variable to `"true"` in the container’s startup configuration.
-
-View tracing informations in Jaeger:
-![View tracing informations in Jaeger](img/jaeger.png)
-
-App monitoring in Grafana:
-![App monitoring in Grafana](img/grafana.png)
+The released Docker images for this application are available at: [dockerhub](https://hub.docker.com/r/evocelot/file-store)
 
 ## Documentation
 
