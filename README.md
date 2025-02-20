@@ -60,7 +60,7 @@ To run only the module only:
 make start-local-container
 ```
 
-> **_NOTE:_** To disable log collection and tracing, manually set the `LOGSTASH_ENABLED` and `TRACING_ENABLED` environment variables to `"false"` in the `Makefile`.
+> **_NOTE:_** To disable log collection, tracing and communication via kafka, manually set the `LOGSTASH_ENABLED`,  `TRACING_ENABLED` and `KAFKA_ENABLED` environment variables to `"false"` in the `Makefile`.
 
 ## Reaching the files
 
