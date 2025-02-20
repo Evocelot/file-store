@@ -71,6 +71,10 @@ When starting the service, it is possible to mount the directory where you want 
 
 In the current project, you can find the uploaded files in the `/stored-files` folder.
 
+## Docker Images
+
+The released Docker images for this application are available at: [dockerhub](https://hub.docker.com/r/evocelot/file-store)
+
 ## Documentation
 
 Detailed documentation is available here: [Documentation](/docs/docs.md)
