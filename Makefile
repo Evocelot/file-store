@@ -54,7 +54,7 @@ start-local-container: create-podman-network stop-local-container build-docker-i
 		-e TRACING_URL=http://$(JAEGER_HOST):$(JAEGER_TRACING_PORT)/v1/traces \
 		-e KAFKA_ENABLED="true" \
 		-e KAFKA_URL=evocelot-kafka:9092 \
-		-e KAFKA_GROUP_ID=email-group \
+		-e KAFKA_GROUP_ID=file-group \
 		-e SPRING_DATASOURCE_URL=jdbc:mariadb://evocelot-mariadb:3306/filestore \
 		-e SPRING_DATASOURCE_USERNAME=root \
 		-e SPRING_DATASOURCE_PASSWORD=admin \
@@ -194,7 +194,7 @@ start-kafka: stop-kafka
 			-e ZOOKEEPER_CLIENT_PORT=2181 \
 			-e ZOOKEEPER_TICK_TIME=2000 \
 			-p 2181:2181 \
-			confluentinc/cp-zookeeper:latest; \
+			confluentinc/cp-zookeeper:7.9.0; \
 		\
 		echo "Zookeeper can be accessed at: http://localhost:2181")
 
@@ -211,7 +211,7 @@ start-kafka: stop-kafka
 			-e KAFKA_LOG_DIRS=/var/lib/kafka/data \
 			-e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 \
 			-p 9092:9092 \
-			confluentinc/cp-kafka:latest; \
+			confluentinc/cp-kafka:7.9.0; \
 		\
 		echo "Kafka can be accessed at: http://localhost:9092")
 
@@ -233,6 +233,6 @@ stop-kafka:
 	$(call run-with-output-indent,\
 		podman rm -f evocelot-zookeeper evocelot-kafka evocelot-kafka-ui)
 
-all: create-podman-network build-docker-image start-elk-stack start-observability start-local-container
+all: create-podman-network build-docker-image start-elk-stack start-observability start-kafka start-local-container
 
 stop-all: stop-elk-stack stop-observability stop-local-container
