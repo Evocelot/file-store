@@ -1,5 +1,6 @@
 package hu.evocelot.filestore;
 
+import org.slf4j.MDC;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -31,6 +32,7 @@ public class Application {
      * @see SpringApplication#run(Class, String...)
      */
     public static void main(String[] args) {
+        MDC.put("app", "file-store");
         SpringApplication.run(Application.class, args);
     }
 }

@@ -18,6 +18,7 @@ LOGSTASH_HOST | logstash | The name of the logstash container to push the logs f
 LOGSTASH_PORT | 5000 | The port of the logstash container. It is only required when the `LOGSTASH_ENABLED` environemnt variable is `"true"`. |
 TRACING_ENABLED | "true" | Enable or disable tracing (`"true"` or `"false"`). |
 TRACING_URL | http://jaeger:4318/v1/traces | The url of the jaeger instance for sending tracing details. It is only required when the `TRACING_ENABLED` environemnt variable is `"true"`. |
+KAFKA_ENABLED | "true" | If set to `"true"` messages about file operations (such as successful uploads) will be sent to the appropriate Kafka topic. |
 SPRING_DATASOURCE_URL | jdbc:mariadb://evocelot-mariadb:3306/sample | The JDBC URL of the DBMS to connect to. |
 SPRING_DATASOURCE_USERNAME | root | The username for connecting to the DBMS. |
 SPRING_DATASOURCE_PASSWORD | admin | The password for connecting to the DBMS. |
