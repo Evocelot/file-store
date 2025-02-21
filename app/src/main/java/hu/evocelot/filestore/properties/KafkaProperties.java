@@ -14,10 +14,10 @@ public class KafkaProperties {
     @Value("${KAFKA_ENABLED:false}")
     private String kafkaEnabled;
 
-    @Value("${KAFKA_URL}")
+    @Value("${KAFKA_URL:}")
     private String kafkaUrl;
 
-    @Value("${KAFKA_GROUP_ID}")
+    @Value("${KAFKA_GROUP_ID:}")
     private String kafkaGroupId;
 
     public String getKafkaEnabled() {
