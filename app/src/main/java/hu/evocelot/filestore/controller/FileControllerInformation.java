@@ -40,6 +40,16 @@ public class FileControllerInformation {
     /**
      * {@value}.
      */
+    public static final String DELETE_FILE_SUMMARY = "Delete file";
+
+    /**
+     * {@value}.
+     */
+    public static final String DELETE_FILE_DESCRIPTION = "Endpoint for delete a file.";
+
+    /**
+     * {@value}.
+     */
     public static final String FILE_ID_PARAM_DESCRIPTION = "The id of the file";
 
     /**
