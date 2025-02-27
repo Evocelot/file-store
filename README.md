@@ -78,7 +78,7 @@ The released Docker images for this application are available at: [dockerhub](ht
 
 ## Documentation
 
-Detailed documentation is available here: [Documentation](/docs/index.md)
+Detailed documentation is available here: [Documentation](https://evocelot.github.io/file-store/)
 
 ## Contributions
 
