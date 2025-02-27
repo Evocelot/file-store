@@ -1,16 +1,26 @@
-# FileStore documentation
+:toc: left
+:toclevels: 3
+:sectnums:
+:icons: font
+:imagesdir: img
+:source-highlighter: highlightjs
 
-## Application Architecture  
+
+= FileStore documentation
+
+== Application Architecture  
 The architectural design of the application is detailed in the diagram provided.
 
-![architecture.drawio](architecture.drawio.png)  
+image::architecture.drawio.png[architecture]
 
-## Environment variables
+== Environment variables
 
 The following environment variables can be configured when running the application:
 
-Environment variable | Sample value | Description |
---- | --- | --- |
+[cols="^,^,^"]
+|===
+| Environment variable | Sample value | Description |
+
 SPRING_PROFILES_ACTIVE | dev | The profile to run with the application. |
 LOGSTASH_ENABLED | "true" | Enable or disable log forwarding to Logstash (`"true"` or `"false"`). |
 LOGSTASH_HOST | logstash | The name of the logstash container to push the logs from the springboot app. It is only required when the `LOGSTASH_ENABLED` environemnt variable is `"true"`. |
@@ -25,34 +35,37 @@ SPRING_DATASOURCE_USERNAME | root | The username for connecting to the DBMS. |
 SPRING_DATASOURCE_PASSWORD | admin | The password for connecting to the DBMS. |
 SPRING_DATASOURCE_DRIVER_CLASS_NAME | org.mariadb.jdbc.Driver | The fully qualified name of the JDBC driver class used for the DBMS connection. |
 BUFFER_SIZE | 8192 | The size of the buffer determines the size of the chunks in which we read files into memory. The smaller its value, the more we load the CPU during file processing, but the less we burden the RAM.
+|===
 
-## Volumes
+== Volumes
 
 You can mount the directory where you want to store the uploaded files as a volume for the application.
 Within the application, you need to bind that directory to the `/store` path to access your files.
 
 For example:
-
-```bash
+[,bash]
+----
 podman run \
     --name filestore \
     -p 8082:8080 \
     -v ./stored-files:/store \
     evocelot/filestore:1.0.0 \
-```
+----
 
 According to the example, you will find the uploaded files in the `/stored-files` directory on your local computer.
 
-## Kafka topic configuration
+== Kafka topic configuration
 
 If the `KAFKA_ENABLED` environment variable is set to `"true"`, the following event will be triggered.
 
-### file-saved
+=== file-saved
 
 Upon a successful file upload, the metadata of the uploaded file will be published to the `file-saved` topic in JSON format. All file metadata will be included in the message, allowing the associated module to easily identify which object the uploaded file belongs to (`objectId`).
 
 Example message:
-```json
+
+[source,json]
+----
 {
 	"id": "005d24ec-06ff-48fc-b885-918a3ef9f35a",
 	"insDate": "2025-02-20T16:24:28.445605948Z",
@@ -66,9 +79,9 @@ Example message:
 	"objectId": "35hg24ec-06ff-48fc-b925-918a3ef9ju76",
 	"systemId": ""
 }
-```
+----
 
-## Logging
+== Logging
 
 The project utilizes the `ELK stack` for `centralized log collection` and monitoring:
 
@@ -76,12 +89,16 @@ The project utilizes the `ELK stack` for `centralized log collection` and monito
 - Elasticsearch: Stores, indexes, and makes the application's logs searchable.
 - Kibana: Provides a user interface for managing the logs stored in Elasticsearch.
 
-> **_NOTE:_** To enable log forwarding to Logstash, set the `LOGSTASH_ENABLED` environment variable to `"true"` in the container’s startup configuration.
+[NOTE]
+--
+To enable log forwarding to Logstash, set the `LOGSTASH_ENABLED` environment variable to `"true"` in the container’s startup configuration.
+--
 
 View logs in Kibana:
-![View logs in Kibana](img/kibana.png)
 
-## Monitoring
+image::kibana.png[View logs in Kibana]
+
+== Monitoring
 
 The project integrates the following tools for monitoring and observability:
 
@@ -89,37 +106,46 @@ The project integrates the following tools for monitoring and observability:
 - Prometheus: Collects and stores application metrics.
 - Grafana: Visualizes metrics in an intuitive interface.
 
-> **_NOTE:_** To enable tracing collection, set the `TRACING__ENABLED` environment variable to `"true"` in the container’s startup configuration.
+[NOTE]
+--
+To enable tracing collection, set the `TRACING_ENABLED` environment variable to `"true"` in the container’s startup configuration.
+--
 
 View tracing informations in Jaeger:
-![View tracing informations in Jaeger](img/jaeger.png)
+
+image::jaeger.png[View tracing informations in Jaeger]
 
 App monitoring in Grafana:
-![App monitoring in Grafana](img/grafana.png)
 
-## local.env
+image::grafana.png[App monitoring in Grafana]
+
+== local.env
 
 The project includes a file named `local.env`, which stores the application details.
 
-Environment variable | Sample value | Description |
---- | --- | --- |
+[cols="^,^,^"]
+|===
+| Environment variable | Sample value | Description |
+
 APPNAME | file-store-module | The name of the application |
 VERSION | 0.0.1-SNAPSHOT | The version number of the application |
+|===
 
-## Building the Docker Image
+== Building the Docker Image
 
 To build the Docker image for this application, use the following command:
 
-```bash
+[,bash]
+----
 make build-docker-image
-```
+----
 
 This command reads the configuration from the `local.env` file, builds the Docker image with the specified settings, and tags it according to the `APPNAME` and `VERSION` values in the configuration.
 
-## Loggin request and response details.
+== Loggin request and response details.
 
 This Spring Boot application features a custom interceptor that `logs detailed information about incoming requests and outgoing responses in JSON format`. Each request and response log is enriched with a unique trace identifier `REQUEST-ID` that is also included in the response headers.
 
-### REQUEST-ID in Request and Response Headers
+=== REQUEST-ID in Request and Response Headers
 
 Adds or uses a custom header `REQUEST-ID` from the request to ensure traceability between request and response logs. If the `REQUEST-ID` header is not present in the request, a new one is generated and included in the response headers.
