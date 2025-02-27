@@ -3,6 +3,7 @@ package hu.evocelot.filestore.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
+import hu.evocelot.filestore.action.DeleteFileAction;
 import hu.evocelot.filestore.action.DownloadFileAction;
 import hu.evocelot.filestore.action.GetFileDetailsAction;
 import hu.evocelot.filestore.action.UploadFileAction;
@@ -36,6 +38,9 @@ public class FileController {
 
 	@Autowired
 	private DownloadFileAction downloadFileAction;
+
+	@Autowired
+	private DeleteFileAction deleteFileAction;
 
 	/**
 	 * Handles file upload requests.
@@ -93,5 +98,26 @@ public class FileController {
 			@Parameter(description = FileControllerInformation.CHECK_HASH_PARAM_DESCRIPTION, required = true) @RequestParam boolean checkHash)
 			throws Exception {
 		return downloadFileAction.downloadFile(fileId, checkHash);
+	}
+
+	/**
+	 * Deletes a file and its metadata.
+	 * <p>
+	 * This endpoint allows clients to delete a file by providing its unique
+	 * identifier. The file's metadata and actual content are removed from the
+	 * system.
+	 * </p>
+	 * 
+	 * @param fileId The unique identifier of the file.
+	 * @return {@link ResponseEntity} with HTTP 204 (No Content) status if deletion
+	 *         is successful.
+	 * @throws Exception If an error occurs during file deletion.
+	 */
+	@DeleteMapping
+	@Operation(summary = FileControllerInformation.DELETE_FILE_SUMMARY, description = FileControllerInformation.DELETE_FILE_DESCRIPTION)
+	public ResponseEntity<Void> deleteFile(
+			@Parameter(description = FileControllerInformation.FILE_ID_PARAM_DESCRIPTION, required = true) @RequestParam String fileId)
+			throws Exception {
+		return deleteFileAction.deleteFile(fileId);
 	}
 }

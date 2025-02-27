@@ -6,9 +6,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.MessageFormat;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -119,6 +123,32 @@ public class FileHelper {
             }
         } catch (IOException e) {
             throw new BaseException(HttpStatus.INTERNAL_SERVER_ERROR, ExceptionType.CANNOT_READ_FILE, e.getMessage());
+        }
+    }
+
+    /**
+     * Deletes a file identified by the given system ID, file ID, and extension.
+     * <p>
+     * The full path of the file is constructed as
+     * {@code systemId/fileId.extension}.
+     * If the file exists, it is deleted. If an error occurs during deletion,
+     * an error message is logged.
+     *
+     * @param systemId  the system identifier where the file is stored.
+     * @param fileId    the unique identifier of the file.
+     * @param extension the file extension without the leading dot.
+     */
+    public void deleteFile(String systemId, String fileId, String extension) {
+        String directoryPath = getDirectoryPath(systemId);
+        String fullPath = getFullPath(directoryPath, fileId, extension);
+        Path path = Paths.get(fullPath);
+
+        try {
+            Files.deleteIfExists(path);
+            LOG.info(MessageFormat.format("File with id {0} deleted successfuly", fileId));
+        } catch (Exception e) {
+            LOG.error(MessageFormat.format("Cannot delete the file with id {0}. Reason: {1}", fileId, e.getMessage()),
+                    e);
         }
     }
 
