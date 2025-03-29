@@ -25,6 +25,8 @@ SPRING_DATASOURCE_USERNAME | root | The username for connecting to the DBMS. |
 SPRING_DATASOURCE_PASSWORD | admin | The password for connecting to the DBMS. |
 SPRING_DATASOURCE_DRIVER_CLASS_NAME | org.mariadb.jdbc.Driver | The fully qualified name of the JDBC driver class used for the DBMS connection. |
 BUFFER_SIZE | 8192 | The size of the buffer determines the size of the chunks in which we read files into memory. The smaller its value, the more we load the CPU during file processing, but the less we burden the RAM.
+MAX_FILE_SIZE | 10MB | The maximum allowed size for an individual file in a multipart request.  
+MAX_REQUEST_SIZE | 10MB | The maximum allowed size for the entire multipart HTTP request, including all files and form data.
 
 ## Volumes
 

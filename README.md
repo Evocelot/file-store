@@ -7,7 +7,7 @@ The starter project: `springboot - microbase` is an open-source starter project 
 ## Technologies used
 
 - Java 21
-- SpringBoot 3.4.2
+- SpringBoot 3.4.4
 - Docker / Podman
 - Make
 
@@ -37,10 +37,12 @@ The project includes a `Makefile` to simplify application startup. Each Makefile
 To run the application along with ELK stack and observability features, execute:
 
 ```bash
-make all
+make start-monitoring-containers
+make start-kafka
+make start-local-container
 ```
 
-This command starts the following containers:
+This commands starts the following containers:
 
 - elasticsearch
 - logstash
@@ -51,10 +53,10 @@ This command starts the following containers:
 - kafka
 - zookeeper
 - kafka-ui
-- sample-module
+- file-store-module
 
-By default, the file-store-module runs on port `8082`.
-The swagger UI can be accessed at: http://localhost:8082/swagger-ui/index.html
+By default, the file-store-module runs on port `8083`.
+The swagger UI can be accessed at: http://localhost:8083/swagger-ui/index.html
 
 ### Run the module only
 
