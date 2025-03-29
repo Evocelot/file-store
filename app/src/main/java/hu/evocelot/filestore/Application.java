@@ -32,7 +32,7 @@ public class Application {
      * @see SpringApplication#run(Class, String...)
      */
     public static void main(String[] args) {
-        MDC.put("app", "file-store");
+        MDC.put("app-name", "file-store-module");
         SpringApplication.run(Application.class, args);
     }
 }
