@@ -1,12 +1,13 @@
-package hu.evocelot.filestore.action;
+package hu.evocelot.filestore.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import hu.evocelot.filestore.accessor.FileEntityAccessor;
 import hu.evocelot.filestore.converter.FileEntityWithIdConverter;
 import hu.evocelot.filestore.dto.FileEntityWithIdDto;
 import hu.evocelot.filestore.dto.FileUploadRequestDto;
@@ -15,7 +16,6 @@ import hu.evocelot.filestore.kafka.KafkaMessageProducer;
 import hu.evocelot.filestore.kafka.KafkaTopics;
 import hu.evocelot.filestore.model.FileEntity;
 import hu.evocelot.filestore.properties.KafkaProperties;
-import hu.evocelot.filestore.service.FileService;
 
 /**
  * Action class responsible for handling file uploads.
@@ -37,24 +37,24 @@ import hu.evocelot.filestore.service.FileService;
  * @author mark.danisovszky
  */
 @Component
-public class UploadFileAction {
+public class UploadFileService {
 
-    @Autowired
+    public UploadFileService(FileEntityWithIdConverter fileEntityWithIdConverter, FileEntityAccessor fileEntityAccessor,
+            FileHelper fileHelper, KafkaProperties kafkaProperties, ObjectMapper objectMapper,
+            @Nullable KafkaMessageProducer kafkaMessageProducer) {
+        this.fileEntityWithIdConverter = fileEntityWithIdConverter;
+        this.fileEntityAccessor = fileEntityAccessor;
+        this.fileHelper = fileHelper;
+        this.kafkaProperties = kafkaProperties;
+        this.objectMapper = objectMapper;
+        this.kafkaMessageProducer = kafkaMessageProducer;
+    }
+
     private FileEntityWithIdConverter fileEntityWithIdConverter;
-
-    @Autowired
-    private FileService fileService;
-
-    @Autowired
+    private FileEntityAccessor fileEntityAccessor;
     private FileHelper fileHelper;
-
-    @Autowired
     private KafkaProperties kafkaProperties;
-
-    @Autowired
     private ObjectMapper objectMapper;
-
-    @Autowired(required = false)
     private KafkaMessageProducer kafkaMessageProducer;
 
     /**
@@ -72,7 +72,7 @@ public class UploadFileAction {
         fileEntity.setExtension(fileUploadRequestDto.getExtension());
         fileEntity.setObjectId(fileUploadRequestDto.getObjectId());
         fileEntity.setSystemId(fileUploadRequestDto.getSystemId());
-        fileEntity = fileService.save(fileEntity);
+        fileEntity = fileEntityAccessor.save(fileEntity);
 
         // Create the base details of the file.
         String filename = fileEntity.getId();
@@ -86,9 +86,9 @@ public class UploadFileAction {
 
         // Update the entity.
         fileEntity.setHash(md5Hash);
-        fileEntity = fileService.save(fileEntity);
+        fileEntity = fileEntityAccessor.save(fileEntity);
 
-        if (kafkaProperties.getKafkaEnabled().equals("true")) {
+        if (kafkaProperties.getEnabled().equals("true")) {
             String json = objectMapper.writeValueAsString(fileEntity);
             kafkaMessageProducer.sendMessage(KafkaTopics.FILE_SAVED, json);
         }

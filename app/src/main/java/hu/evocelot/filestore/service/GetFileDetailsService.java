@@ -1,24 +1,24 @@
-package hu.evocelot.filestore.action;
+package hu.evocelot.filestore.service;
 
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import hu.evocelot.filestore.accessor.FileEntityAccessor;
 import hu.evocelot.filestore.converter.FileEntityWithIdConverter;
 import hu.evocelot.filestore.dto.FileEntityWithIdDto;
 import hu.evocelot.filestore.exception.BaseException;
 import hu.evocelot.filestore.exception.ExceptionType;
 import hu.evocelot.filestore.model.FileEntity;
-import hu.evocelot.filestore.service.FileService;
 
 /**
  * Action class responsible for retrieving file metadata details.
  * <p>
  * This class provides functionality to fetch metadata of a stored file based on
- * its unique identifier. It interacts with the {@link FileService} to fetch the
+ * its unique identifier. It interacts with the {@link FileEntityAccessor} to
+ * fetch the
  * file entity and converts it into a DTO representation using
  * {@link FileEntityWithIdConverter}.
  * </p>
@@ -26,12 +26,15 @@ import hu.evocelot.filestore.service.FileService;
  * @author mark.danisovszky
  */
 @Component
-public class GetFileDetailsAction {
+public class GetFileDetailsService {
 
-    @Autowired
-    private FileService fileService;
+    public GetFileDetailsService(FileEntityAccessor fileEntityAccessor,
+            FileEntityWithIdConverter fileEntityWithIdConverter) {
+        this.fileEntityAccessor = fileEntityAccessor;
+        this.fileEntityWithIdConverter = fileEntityWithIdConverter;
+    }
 
-    @Autowired
+    private FileEntityAccessor fileEntityAccessor;
     private FileEntityWithIdConverter fileEntityWithIdConverter;
 
     /**
@@ -48,7 +51,7 @@ public class GetFileDetailsAction {
     public ResponseEntity<FileEntityWithIdDto> getFileDetails(String fileId)
             throws BaseException {
         // Get the file entity.
-        Optional<FileEntity> optionalFileEntity = fileService.findById(fileId);
+        Optional<FileEntity> optionalFileEntity = fileEntityAccessor.findById(fileId);
         if (optionalFileEntity.isEmpty()) {
             throw new BaseException(HttpStatus.NOT_FOUND, ExceptionType.FILE_ENTITY_NOT_FOUND,
                     "Cannot find file entity with id :" + fileId);

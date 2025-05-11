@@ -1,6 +1,5 @@
 package hu.evocelot.filestore.configuration;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -27,7 +26,10 @@ import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter;
 @Configuration
 public class OtlpSpanExporterConfig {
 
-    @Autowired
+    public OtlpSpanExporterConfig(JaegerProperties jaegerProperties) {
+        this.jaegerProperties = jaegerProperties;
+    }
+
     private JaegerProperties jaegerProperties;
 
     /**
@@ -45,8 +47,8 @@ public class OtlpSpanExporterConfig {
      */
     @Bean
     OtlpGrpcSpanExporter otlpGrpcSpanExporter() {
-        if (jaegerProperties.getTracingEnabled().equals("true")) {
-            String tracingUrl = jaegerProperties.getTracingUrl();
+        if (jaegerProperties.getEnabled().equals("true")) {
+            String tracingUrl = jaegerProperties.getUrl();
 
             // Create and return the OtlpGrpcSpanExporter, configured with the tracing URL
             // from JaegerProperties

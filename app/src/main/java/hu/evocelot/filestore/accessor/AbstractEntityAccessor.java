@@ -1,4 +1,4 @@
-package hu.evocelot.filestore.service;
+package hu.evocelot.filestore.accessor;
 
 import java.math.BigInteger;
 import java.text.MessageFormat;
@@ -16,21 +16,21 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import hu.evocelot.filestore.model.AbstractIdentifiedAuditEntity;
 
 /**
- * Base class for all services that provide common functionality
+ * Base class for all entity accessors that provide common functionality
  * such as save, saveAll, findById, and delete operations.
- * It is intended to be extended by concrete service classes to manage entities
+ * It is intended to be extended by concrete accessor classes to manage entities
  * that extend {@link AbstractIdentifiedAuditEntity}.
  * <p>
  * Provides audit field management for entities and logging.
  * </p>
  * 
- * @param <T> the type of entity this service handles, extending
+ * @param <T> the type of entity this class handles, extending
  *            {@link AbstractIdentifiedAuditEntity}
  * @author mark.danisovszky
  */
-public abstract class AbstractBaseService<T extends AbstractIdentifiedAuditEntity> {
+public abstract class AbstractEntityAccessor<T extends AbstractIdentifiedAuditEntity> {
 
-    private static final Logger LOG = LogManager.getLogger(AbstractBaseService.class);
+    private static final Logger LOG = LogManager.getLogger(AbstractEntityAccessor.class);
 
     /**
      * Provides the JpaRepository that will be used for managing entities.

@@ -7,7 +7,7 @@ The starter project: `springboot - microbase` is an open-source starter project 
 ## Technologies used
 
 - Java 21
-- SpringBoot 3.4.4
+- SpringBoot 3.4.5
 - Docker / Podman
 - Make
 
@@ -56,7 +56,7 @@ This commands starts the following containers:
 - file-store-module
 
 By default, the file-store-module runs on port `8083`.
-The swagger UI can be accessed at: http://localhost:8083/swagger-ui/index.html
+The swagger UI can be accessed at: http://localhost:8083/file-store/swagger-ui/index.html
 
 ### Run the module only
 

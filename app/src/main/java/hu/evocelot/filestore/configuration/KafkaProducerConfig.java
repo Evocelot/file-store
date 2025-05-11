@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,10 +35,13 @@ import hu.evocelot.filestore.properties.KafkaProperties;
  * @author mark.danisovszky
  */
 @Configuration
-@ConditionalOnProperty(name = "KAFKA_ENABLED", havingValue = "true", matchIfMissing = false)
+@ConditionalOnProperty(name = "kafka.enabled", havingValue = "true", matchIfMissing = false)
 public class KafkaProducerConfig {
 
-    @Autowired
+    public KafkaProducerConfig(KafkaProperties kafkaProperties) {
+        this.kafkaProperties = kafkaProperties;
+    }
+
     private KafkaProperties kafkaProperties;
 
     /**
@@ -60,7 +62,7 @@ public class KafkaProducerConfig {
         Map<String, Object> configProps = new HashMap<>();
 
         // Set the Kafka URL for the producer to connect to
-        configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getKafkaUrl());
+        configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getUrl());
 
         // Set the serializer for both key and value of messages as StringSerializer
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);

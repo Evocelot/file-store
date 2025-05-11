@@ -1,6 +1,5 @@
 package hu.evocelot.filestore.converter;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import hu.evocelot.filestore.dto.FileEntityWithIdDto;
@@ -15,7 +14,10 @@ import hu.evocelot.filestore.model.FileEntity;
 @Component
 public class FileEntityWithIdConverter implements EntityConverter<FileEntity, FileEntityWithIdDto> {
 
-    @Autowired
+    public FileEntityWithIdConverter(FileEntityConverter fileEntityConverter) {
+        this.fileEntityConverter = fileEntityConverter;
+    }
+
     private FileEntityConverter fileEntityConverter;
 
     @Override

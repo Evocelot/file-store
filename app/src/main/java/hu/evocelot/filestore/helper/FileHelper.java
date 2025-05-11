@@ -17,13 +17,11 @@ import java.text.MessageFormat;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import hu.evocelot.filestore.exception.BaseException;
 import hu.evocelot.filestore.exception.ExceptionType;
-import hu.evocelot.filestore.properties.FileStoreEnv;
 import hu.evocelot.filestore.properties.FileStoreProperties;
 import jakarta.xml.bind.annotation.adapters.HexBinaryAdapter;
 
@@ -38,11 +36,11 @@ public class FileHelper {
     private static final Logger LOG = LogManager.getLogger(FileHelper.class);
     private static final String MD5_DIGEST = "MD5";
 
-    @Autowired
-    private FileStoreProperties fileStoreProperties;
+    public FileHelper(FileStoreProperties fileStoreProperties) {
+        this.fileStoreProperties = fileStoreProperties;
+    }
 
-    @Autowired
-    private FileStoreEnv fileStoreEnv;
+    private FileStoreProperties fileStoreProperties;
 
     /**
      * Stores a file at the specified path using the provided input stream.
@@ -64,7 +62,7 @@ public class FileHelper {
         try (DigestInputStream digestInputStream = new DigestInputStream(inputStream, messageDigest);
                 FileOutputStream fileOutputStream = new FileOutputStream(fullPath);) {
 
-            byte[] buffer = new byte[fileStoreEnv.getBufferSize()];
+            byte[] buffer = new byte[fileStoreProperties.getBufferSize()];
             int bytesRead;
             while ((bytesRead = digestInputStream.read(buffer)) != -1) {
                 fileOutputStream.write(buffer, 0, bytesRead);
@@ -93,7 +91,7 @@ public class FileHelper {
         try (DigestInputStream digestInputStream = new DigestInputStream(new FileInputStream(fullPath),
                 messageDigest);) {
 
-            byte[] buffer = new byte[fileStoreEnv.getBufferSize()];
+            byte[] buffer = new byte[fileStoreProperties.getBufferSize()];
             while (digestInputStream.read(buffer) != -1) {
                 // Read next buffer.
             }
@@ -116,7 +114,7 @@ public class FileHelper {
     public void getFile(String fullPath, OutputStream outputStream) throws BaseException {
         try (InputStream inputStream = new FileInputStream(fullPath)) {
 
-            byte[] buffer = new byte[fileStoreEnv.getBufferSize()];
+            byte[] buffer = new byte[fileStoreProperties.getBufferSize()];
             int bytesRead;
             while ((bytesRead = inputStream.read(buffer)) != -1) {
                 outputStream.write(buffer, 0, bytesRead);

@@ -1,6 +1,5 @@
-package hu.evocelot.filestore.service;
+package hu.evocelot.filestore.accessor;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
@@ -8,14 +7,17 @@ import hu.evocelot.filestore.model.FileEntity;
 import hu.evocelot.filestore.repository.FileRepository;
 
 /**
- * File service for managing the {@link FileEntity}.
+ * File entity accessor for managing the {@link FileEntity}.
  * 
  * @author mark.danisovszky
  */
 @Service
-public class FileService extends AbstractBaseService<FileEntity> {
+public class FileEntityAccessor extends AbstractEntityAccessor<FileEntity> {
 
-    @Autowired
+    public FileEntityAccessor(FileRepository fileRepository) {
+        this.fileRepository = fileRepository;
+    }
+
     private FileRepository fileRepository;
 
     @Override

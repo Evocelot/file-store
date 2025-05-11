@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.util.ContentCachingRequestWrapper;
@@ -64,6 +65,8 @@ public class LoggingInterceptor implements HandlerInterceptor {
             request.setAttribute(REQUEST_ID_HEADER_KEY, requestId);
         }
 
+        MDC.put("requestId", requestId);
+
         // Collect and log request details.
         Map<String, Object> requestDetails = collectRequestDetails((ContentCachingRequestWrapper) request);
         requestDetails.put(REQUEST_ID_HEADER_KEY, requestId);
@@ -107,6 +110,8 @@ public class LoggingInterceptor implements HandlerInterceptor {
             LOG.info("Response created: {}", jsonLog);
         } catch (JsonProcessingException e) {
             LOG.error("Error serializing response details to JSON:", e);
+        } finally {
+            MDC.remove("requestId");
         }
     }
 
