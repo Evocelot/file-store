@@ -62,7 +62,7 @@ start-local-container: create-podman-network stop-local-container build-docker-i
   		--memory-swap="512m" \
 		$(IMAGE_NAME); \
 		\
-	@echo "$(APPNAME) started at: http://localhost:8083\nThe swagger UI can be accessed at: http://localhost:8083/swagger-ui/index.html"
+	@echo "$(APPNAME) started at: http://localhost:8083\nThe swagger UI can be accessed at: http://localhost:8083/file-store/swagger-ui/index.html"
 	@echo "[<<<]"
 
 # Stops the local container.
