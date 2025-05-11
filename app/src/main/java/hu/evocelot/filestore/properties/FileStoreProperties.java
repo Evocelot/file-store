@@ -1,18 +1,18 @@
 package hu.evocelot.filestore.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 
 /**
- * Properties class for reading file-store-related properties value.
+ * Class for reading the relevant project ENVs.
  * 
  * @author mark.danisovszky
  */
-@Component
+@Configuration
 @ConfigurationProperties(prefix = "filestore")
 public class FileStoreProperties {
-
     private String storePath;
+    private int bufferSize;
 
     public String getStorePath() {
         return storePath;
@@ -20,5 +20,13 @@ public class FileStoreProperties {
 
     public void setStorePath(String storePath) {
         this.storePath = storePath;
+    }
+
+    public int getBufferSize() {
+        return bufferSize;
+    }
+
+    public void setBufferSize(int bufferSize) {
+        this.bufferSize = bufferSize;
     }
 }

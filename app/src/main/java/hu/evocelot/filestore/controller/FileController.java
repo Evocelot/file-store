@@ -1,6 +1,5 @@
 package hu.evocelot.filestore.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,12 +11,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
-import hu.evocelot.filestore.action.DeleteFileAction;
-import hu.evocelot.filestore.action.DownloadFileAction;
-import hu.evocelot.filestore.action.GetFileDetailsAction;
-import hu.evocelot.filestore.action.UploadFileAction;
 import hu.evocelot.filestore.dto.FileEntityWithIdDto;
 import hu.evocelot.filestore.dto.FileUploadRequestDto;
+import hu.evocelot.filestore.service.DeleteFileService;
+import hu.evocelot.filestore.service.DownloadFileService;
+import hu.evocelot.filestore.service.GetFileDetailsService;
+import hu.evocelot.filestore.service.UploadFileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 
@@ -30,17 +29,18 @@ import io.swagger.v3.oas.annotations.Parameter;
 @RequestMapping("/file")
 public class FileController {
 
-	@Autowired
-	private UploadFileAction uploadFileAction;
+	public FileController(UploadFileService uploadFileService, GetFileDetailsService getFileDetailsService,
+			DownloadFileService downloadFileService, DeleteFileService deleteFileService) {
+		this.uploadFileService = uploadFileService;
+		this.getFileDetailsService = getFileDetailsService;
+		this.downloadFileService = downloadFileService;
+		this.deleteFileService = deleteFileService;
+	}
 
-	@Autowired
-	private GetFileDetailsAction getFileDetailsAction;
-
-	@Autowired
-	private DownloadFileAction downloadFileAction;
-
-	@Autowired
-	private DeleteFileAction deleteFileAction;
+	private UploadFileService uploadFileService;
+	private GetFileDetailsService getFileDetailsService;
+	private DownloadFileService downloadFileService;
+	private DeleteFileService deleteFileService;
 
 	/**
 	 * Handles file upload requests.
@@ -59,7 +59,7 @@ public class FileController {
 	@Operation(summary = FileControllerInformation.UPLOAD_FILE_SUMMARY, description = FileControllerInformation.UPLOAD_FILE_DESCRIPTION)
 	public ResponseEntity<FileEntityWithIdDto> uploadFile(@ModelAttribute FileUploadRequestDto fileUploadRequestDto)
 			throws Exception {
-		return uploadFileAction.uploadFile(fileUploadRequestDto);
+		return uploadFileService.uploadFile(fileUploadRequestDto);
 	}
 
 	/**
@@ -78,7 +78,7 @@ public class FileController {
 	public ResponseEntity<FileEntityWithIdDto> getFileDetails(
 			@Parameter(description = FileControllerInformation.FILE_ID_PARAM_DESCRIPTION, required = true) @RequestParam String fileId)
 			throws Exception {
-		return getFileDetailsAction.getFileDetails(fileId);
+		return getFileDetailsService.getFileDetails(fileId);
 	}
 
 	/**
@@ -97,7 +97,7 @@ public class FileController {
 			@Parameter(description = FileControllerInformation.FILE_ID_PARAM_DESCRIPTION, required = true) @RequestParam String fileId,
 			@Parameter(description = FileControllerInformation.CHECK_HASH_PARAM_DESCRIPTION, required = true) @RequestParam boolean checkHash)
 			throws Exception {
-		return downloadFileAction.downloadFile(fileId, checkHash);
+		return downloadFileService.downloadFile(fileId, checkHash);
 	}
 
 	/**
@@ -118,6 +118,6 @@ public class FileController {
 	public ResponseEntity<Void> deleteFile(
 			@Parameter(description = FileControllerInformation.FILE_ID_PARAM_DESCRIPTION, required = true) @RequestParam String fileId)
 			throws Exception {
-		return deleteFileAction.deleteFile(fileId);
+		return deleteFileService.deleteFile(fileId);
 	}
 }
