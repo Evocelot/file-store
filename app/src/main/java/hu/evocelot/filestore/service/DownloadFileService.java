@@ -1,4 +1,4 @@
-package hu.evocelot.filestore.action;
+package hu.evocelot.filestore.service;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,7 +7,6 @@ import java.util.Optional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -15,11 +14,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
+import hu.evocelot.filestore.accessor.FileEntityAccessor;
 import hu.evocelot.filestore.exception.BaseException;
 import hu.evocelot.filestore.exception.ExceptionType;
 import hu.evocelot.filestore.helper.FileHelper;
 import hu.evocelot.filestore.model.FileEntity;
-import hu.evocelot.filestore.service.FileService;
 
 /**
  * Handles the action of downloading a file from the file store.
@@ -31,14 +30,16 @@ import hu.evocelot.filestore.service.FileService;
  * @author mark.danisovszky
  */
 @Component
-public class DownloadFileAction {
+public class DownloadFileService {
 
-    private static final Logger LOG = LogManager.getLogger(DownloadFileAction.class);
+    private static final Logger LOG = LogManager.getLogger(DownloadFileService.class);
 
-    @Autowired
-    private FileService fileService;
+    public DownloadFileService(FileEntityAccessor fileEntityAccessor, FileHelper fileHelper) {
+        this.fileEntityAccessor = fileEntityAccessor;
+        this.fileHelper = fileHelper;
+    }
 
-    @Autowired
+    private FileEntityAccessor fileEntityAccessor;
     private FileHelper fileHelper;
 
     /**
@@ -58,7 +59,7 @@ public class DownloadFileAction {
      */
     public ResponseEntity<StreamingResponseBody> downloadFile(String fileId, boolean checkHash) throws Exception {
         // Get the file entity.
-        Optional<FileEntity> optionalFileEntity = fileService.findById(fileId);
+        Optional<FileEntity> optionalFileEntity = fileEntityAccessor.findById(fileId);
         if (optionalFileEntity.isEmpty()) {
             throw new BaseException(HttpStatus.NOT_FOUND, ExceptionType.FILE_ENTITY_NOT_FOUND,
                     "Cannot find file entity with id :" + fileId);

@@ -1,23 +1,23 @@
-package hu.evocelot.filestore.action;
+package hu.evocelot.filestore.service;
 
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import hu.evocelot.filestore.accessor.FileEntityAccessor;
 import hu.evocelot.filestore.exception.BaseException;
 import hu.evocelot.filestore.exception.ExceptionType;
 import hu.evocelot.filestore.helper.FileHelper;
 import hu.evocelot.filestore.model.FileEntity;
-import hu.evocelot.filestore.service.FileService;
 
 /**
  * Action class responsible for deleting a file and its metadata.
  * <p>
  * This class provides functionality to remove a stored file and its associated
- * metadata. It interacts with the {@link FileService} to delete the file entity
+ * metadata. It interacts with the {@link FileEntityAccessor} to delete the file
+ * entity
  * from the database and uses {@link FileHelper} to remove the actual file from
  * the storage system.
  * </p>
@@ -25,12 +25,14 @@ import hu.evocelot.filestore.service.FileService;
  * @author mark.danisovszky
  */
 @Component
-public class DeleteFileAction {
+public class DeleteFileService {
 
-    @Autowired
-    private FileService fileService;
+    public DeleteFileService(FileEntityAccessor fileEntityAccessor, FileHelper fileHelper) {
+        this.fileEntityAccessor = fileEntityAccessor;
+        this.fileHelper = fileHelper;
+    }
 
-    @Autowired
+    private FileEntityAccessor fileEntityAccessor;
     private FileHelper fileHelper;
 
     /**
@@ -47,7 +49,7 @@ public class DeleteFileAction {
      */
     public ResponseEntity<Void> deleteFile(String fileId) throws BaseException {
         // Get the file entity.
-        Optional<FileEntity> optionalFileEntity = fileService.findById(fileId);
+        Optional<FileEntity> optionalFileEntity = fileEntityAccessor.findById(fileId);
         if (optionalFileEntity.isEmpty()) {
             throw new BaseException(HttpStatus.NOT_FOUND, ExceptionType.FILE_ENTITY_NOT_FOUND,
                     "Cannot find file entity with id :" + fileId);
@@ -55,7 +57,7 @@ public class DeleteFileAction {
         FileEntity fileEntity = optionalFileEntity.get();
 
         fileHelper.deleteFile(fileEntity.getSystemId(), fileEntity.getId(), fileEntity.getExtension());
-        fileService.delete(fileEntity);
+        fileEntityAccessor.delete(fileEntity);
 
         return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
     }
