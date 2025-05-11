@@ -7,7 +7,7 @@ The starter project: `springboot - microbase` is an open-source starter project 
 ## Technologies used
 
 - Java 21
-- SpringBoot 3.4.4
+- SpringBoot 3.4.5
 - Docker / Podman
 - Make
 
