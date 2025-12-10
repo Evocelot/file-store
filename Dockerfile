@@ -1,5 +1,5 @@
 # 1️⃣ Base image
-FROM openjdk:21-slim-buster
+FROM eclipse-temurin:21-jdk
 
 # 2️⃣ Working directory
 WORKDIR /app
