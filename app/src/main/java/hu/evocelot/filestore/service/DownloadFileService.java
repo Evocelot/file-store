@@ -2,6 +2,7 @@ package hu.evocelot.filestore.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
@@ -104,5 +105,58 @@ public class DownloadFileService {
                         "attachment; filename=\"" + fileEntity.getName() + "." + fileEntity.getExtension() + "\"")
                 .contentLength(file.length())
                 .body(responseBody);
+    }
+
+    /**
+     * Downloads a file as a byte array for fast rendering in browsers.
+     *
+     * @param fileId    the unique identifier of the file to download
+     * @param checkHash if true, verify the file hash
+     * @return ResponseEntity containing the file bytes
+     * @throws Exception if the file is missing or corrupted
+     */
+    public ResponseEntity<byte[]> downloadFile2(String fileId, boolean checkHash) throws Exception {
+        // Get the file entity.
+        Optional<FileEntity> optionalFileEntity = fileEntityAccessor.findById(fileId);
+        if (optionalFileEntity.isEmpty()) {
+            throw new BaseException(
+                    org.springframework.http.HttpStatus.NOT_FOUND,
+                    ExceptionType.FILE_ENTITY_NOT_FOUND,
+                    "Cannot find file entity with id :" + fileId);
+        }
+
+        FileEntity fileEntity = optionalFileEntity.get();
+        String directoryPath = fileHelper.getDirectoryPath(fileEntity.getSystemId());
+        String fullPath = fileHelper.getFullPath(directoryPath, fileId, fileEntity.getExtension());
+
+        // Get the file.
+        File file = new File(fullPath);
+        if (!file.exists() || !file.canRead()) {
+            throw new BaseException(
+                    org.springframework.http.HttpStatus.NOT_FOUND,
+                    ExceptionType.FILE_ENTITY_NOT_FOUND,
+                    "Cannot find file in path:" + fullPath);
+        }
+
+        // Check hash if needed
+        if (checkHash) {
+            String actualHash = fileHelper.getFileHash(fullPath);
+            if (!actualHash.equals(fileEntity.getHash())) {
+                throw new BaseException(
+                        org.springframework.http.HttpStatus.CONFLICT,
+                        ExceptionType.CORRUPTED_FILE,
+                        "Corrupted file!");
+            }
+        }
+
+        // Read file fully into memory
+        byte[] fileBytes = Files.readAllBytes(file.toPath());
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM) // vagy IMAGE_JPEG/PNG ha tudjuk
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + fileEntity.getName() + "." + fileEntity.getExtension() + "\"")
+                .contentLength(fileBytes.length)
+                .body(fileBytes);
     }
 }

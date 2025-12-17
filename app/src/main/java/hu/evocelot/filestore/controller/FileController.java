@@ -100,6 +100,15 @@ public class FileController {
 		return downloadFileService.downloadFile(fileId, checkHash);
 	}
 
+	@GetMapping("/download2")
+	@Operation(summary = FileControllerInformation.DOWNLOAD_FILE_SUMMARY, description = FileControllerInformation.DOWNLOAD_FILE_DESCRIPTION)
+	public ResponseEntity<byte[]> downloadFile2(
+			@Parameter(description = FileControllerInformation.FILE_ID_PARAM_DESCRIPTION, required = true) @RequestParam String fileId,
+			@Parameter(description = FileControllerInformation.CHECK_HASH_PARAM_DESCRIPTION, required = true) @RequestParam boolean checkHash)
+			throws Exception {
+		return downloadFileService.downloadFile2(fileId, checkHash);
+	}
+
 	/**
 	 * Deletes a file and its metadata.
 	 * <p>
