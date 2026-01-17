@@ -40,7 +40,7 @@ dependencies {
     implementation group: 'org.codehaus.janino', name: 'janino', version: '3.1.2'
 
     implementation group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '3.5.3'
-
+    implementation group: 'org.postgresql', name: 'postgresql', version : '42.7.3'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
