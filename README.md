@@ -13,9 +13,9 @@ The starter project: `springboot - microbase` is an open-source starter project 
 
 ## Core Functions
 
-- **Upload File** – Supports file uploads with configurable size and chunking via environment variables, optimizing CPU and RAM usage.
+- **Upload File** – Supports file uploads with configurable size, optional password and chunking via environment variables, optimizing CPU and RAM usage.
 - **Get File Details** – Retrieve metadata of uploaded files.
-- **Download File** – Download files with adjustable chunking and optional hash verification to ensure data integrity.
+- **Download File** – Download files with adjustable chunking and optional hash and password verification to ensure data integrity.
 - **Delete File** – Remove stored files.
 
 ## Prerequisites
