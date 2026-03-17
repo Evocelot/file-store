@@ -13,6 +13,7 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 
 import hu.evocelot.filestore.dto.FileEntityWithIdDto;
 import hu.evocelot.filestore.dto.FileUploadRequestDto;
+import hu.evocelot.filestore.dto.PasswordDto;
 import hu.evocelot.filestore.service.DeleteFileService;
 import hu.evocelot.filestore.service.DownloadFileService;
 import hu.evocelot.filestore.service.GetFileDetailsService;
@@ -96,8 +97,30 @@ public class FileController {
 	public ResponseEntity<StreamingResponseBody> downloadFile(
 			@Parameter(description = FileControllerInformation.FILE_ID_PARAM_DESCRIPTION, required = true) @RequestParam String fileId,
 			@Parameter(description = FileControllerInformation.CHECK_HASH_PARAM_DESCRIPTION, required = true) @RequestParam boolean checkHash)
+
 			throws Exception {
-		return downloadFileService.downloadFile(fileId, checkHash);
+		return downloadFileService.downloadFile(fileId, checkHash, null);
+	}
+
+	/**
+	 * Handles file download with password requests.
+	 * <p>
+	 * This endpoint allows clients to download a file by sending the file id.
+	 * 
+	 * @param fileId    - the id of the file.
+	 * @param checkHash - if true, we will check the MD5 hash of the file content.
+	 * @return {@link ResponseEntity} containing the downloadable file stream.
+	 * @throws Exception when error occurs.
+	 */
+	@PostMapping("/download")
+	@Operation(summary = FileControllerInformation.DOWNLOAD_SECURE_FILE_SUMMARY, description = FileControllerInformation.DOWNLOAD_SECURE_FILE_DESCRIPTION)
+	public ResponseEntity<StreamingResponseBody> downloadProtectedFile(
+			@Parameter(description = FileControllerInformation.FILE_ID_PARAM_DESCRIPTION, required = true) @RequestParam String fileId,
+			@Parameter(description = FileControllerInformation.CHECK_HASH_PARAM_DESCRIPTION, required = true) @RequestParam boolean checkHash,
+			PasswordDto passwordDto)
+
+			throws Exception {
+		return downloadFileService.downloadFile(fileId, checkHash, passwordDto);
 	}
 
 	/**

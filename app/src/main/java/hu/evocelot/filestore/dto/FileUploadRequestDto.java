@@ -26,6 +26,9 @@ public class FileUploadRequestDto {
     @Schema(description = "The file", required = true)
     private MultipartFile file;
 
+    @Schema(description = "The optional password", required = false, maxLength = 50)
+    private String password;
+
     public String getName() {
         return name;
     }
@@ -64,5 +67,13 @@ public class FileUploadRequestDto {
 
     public void setFile(MultipartFile file) {
         this.file = file;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

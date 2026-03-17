@@ -52,6 +52,13 @@ public class FileEntity extends AbstractIdentifiedAuditEntity {
     @Size(max = 100)
     private String systemId;
 
+    /**
+     * Bcrypt hash of the file
+     */
+    @Column(name = "password_hash", length = 100, nullable = true)
+    @Size(max = 100)
+    private String passwordHash;
+
     public String getName() {
         return name;
     }
@@ -90,5 +97,13 @@ public class FileEntity extends AbstractIdentifiedAuditEntity {
 
     public void setSystemId(String systemId) {
         this.systemId = systemId;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 }

@@ -1,8 +1,10 @@
 package hu.evocelot.filestore.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,21 +43,23 @@ public class UploadFileService {
 
     public UploadFileService(FileEntityWithIdConverter fileEntityWithIdConverter, FileEntityAccessor fileEntityAccessor,
             FileHelper fileHelper, KafkaProperties kafkaProperties, ObjectMapper objectMapper,
-            @Nullable KafkaMessageProducer kafkaMessageProducer) {
+            @Nullable KafkaMessageProducer kafkaMessageProducer, PasswordEncoder passwordEncoder) {
         this.fileEntityWithIdConverter = fileEntityWithIdConverter;
         this.fileEntityAccessor = fileEntityAccessor;
         this.fileHelper = fileHelper;
         this.kafkaProperties = kafkaProperties;
         this.objectMapper = objectMapper;
         this.kafkaMessageProducer = kafkaMessageProducer;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    private FileEntityWithIdConverter fileEntityWithIdConverter;
-    private FileEntityAccessor fileEntityAccessor;
-    private FileHelper fileHelper;
-    private KafkaProperties kafkaProperties;
-    private ObjectMapper objectMapper;
-    private KafkaMessageProducer kafkaMessageProducer;
+    private final FileEntityWithIdConverter fileEntityWithIdConverter;
+    private final FileEntityAccessor fileEntityAccessor;
+    private final FileHelper fileHelper;
+    private final KafkaProperties kafkaProperties;
+    private final ObjectMapper objectMapper;
+    private final KafkaMessageProducer kafkaMessageProducer;
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * Handles the logic for processing a file upload.
@@ -72,6 +76,12 @@ public class UploadFileService {
         fileEntity.setExtension(fileUploadRequestDto.getExtension());
         fileEntity.setObjectId(fileUploadRequestDto.getObjectId());
         fileEntity.setSystemId(fileUploadRequestDto.getSystemId());
+
+        String passwordFromRequest = fileUploadRequestDto.getPassword();
+        if (StringUtils.isNotBlank(passwordFromRequest)) {
+            String hashedPassword = passwordEncoder.encode(passwordFromRequest);
+            fileEntity.setPasswordHash(hashedPassword);
+        }
         fileEntity = fileEntityAccessor.save(fileEntity);
 
         // Create the base details of the file.
