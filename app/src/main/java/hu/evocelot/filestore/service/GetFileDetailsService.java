@@ -14,7 +14,7 @@ import hu.evocelot.filestore.exception.ExceptionType;
 import hu.evocelot.filestore.model.FileEntity;
 
 /**
- * Action class responsible for retrieving file metadata details.
+ * Service class responsible for retrieving file metadata details.
  * <p>
  * This class provides functionality to fetch metadata of a stored file based on
  * its unique identifier. It interacts with the {@link FileEntityAccessor} to

@@ -1,5 +1,8 @@
 package hu.evocelot.filestore.controller;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,6 +19,7 @@ import hu.evocelot.filestore.dto.FileUploadRequestDto;
 import hu.evocelot.filestore.service.DeleteFileService;
 import hu.evocelot.filestore.service.DownloadFileService;
 import hu.evocelot.filestore.service.GetFileDetailsService;
+import hu.evocelot.filestore.service.ListFileDetailsService;
 import hu.evocelot.filestore.service.UploadFileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -30,17 +34,20 @@ import io.swagger.v3.oas.annotations.Parameter;
 public class FileController {
 
 	public FileController(UploadFileService uploadFileService, GetFileDetailsService getFileDetailsService,
-			DownloadFileService downloadFileService, DeleteFileService deleteFileService) {
+			DownloadFileService downloadFileService, DeleteFileService deleteFileService,
+			ListFileDetailsService listFileDetailsService) {
 		this.uploadFileService = uploadFileService;
 		this.getFileDetailsService = getFileDetailsService;
 		this.downloadFileService = downloadFileService;
 		this.deleteFileService = deleteFileService;
+		this.listFileDetailsService = listFileDetailsService;
 	}
 
-	private UploadFileService uploadFileService;
-	private GetFileDetailsService getFileDetailsService;
-	private DownloadFileService downloadFileService;
-	private DeleteFileService deleteFileService;
+	private final UploadFileService uploadFileService;
+	private final GetFileDetailsService getFileDetailsService;
+	private final DownloadFileService downloadFileService;
+	private final DeleteFileService deleteFileService;
+	private final ListFileDetailsService listFileDetailsService;
 
 	/**
 	 * Handles file upload requests.
@@ -79,6 +86,32 @@ public class FileController {
 			@Parameter(description = FileControllerInformation.FILE_ID_PARAM_DESCRIPTION, required = true) @RequestParam String fileId)
 			throws Exception {
 		return getFileDetailsService.getFileDetails(fileId);
+	}
+
+	/**
+	 * Retrieves a paginated list of file metadata associated with a given object.
+	 * <p>
+	 * This endpoint allows clients to query file metadata records linked to a
+	 * specific object identifier. The results are returned in a paginated and
+	 * sorted format, ordered by insertion date in descending order.
+	 * </p>
+	 *
+	 * @param page     The zero-based page index to retrieve.
+	 * @param size     The number of records per page.
+	 * @param objectId The identifier of the related object whose files are queried.
+	 * @return {@link ResponseEntity} containing a paginated list of file metadata.
+	 * @throws Exception If an error occurs while retrieving the file list.
+	 */
+	@GetMapping("/list")
+	@Operation(summary = FileControllerInformation.GET_FILE_DETAILS_LIST_SUMMARY, description = FileControllerInformation.GET_FILE_DETAILS_LIST_DESCRIPTION)
+	public ResponseEntity<?> getFileDetailsList(@RequestParam int page,
+			@RequestParam int size,
+			@RequestParam String objectId)
+			throws Exception {
+		Pageable pageable = PageRequest.of(page, size, Sort.by("insDate").descending());
+
+		return ResponseEntity
+				.ok(listFileDetailsService.list(objectId, pageable));
 	}
 
 	/**

@@ -30,6 +30,16 @@ public class FileControllerInformation {
     /**
      * {@value}.
      */
+    public static final String GET_FILE_DETAILS_LIST_SUMMARY = "List file details";
+
+    /**
+     * {@value}.
+     */
+    public static final String GET_FILE_DETAILS_LIST_DESCRIPTION = "Endpoint for listing the file details.";
+
+    /**
+     * {@value}.
+     */
     public static final String DOWNLOAD_FILE_SUMMARY = "Download file";
 
     /**
