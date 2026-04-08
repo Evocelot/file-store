@@ -25,6 +25,9 @@ public class FileEntityDto {
     @Schema(description = "File creator system ID", required = false, maxLength = 100)
     private String systemId;
 
+    @Schema(description = "The size of the file in bytes", required = false)
+    private Long size;
+
     public String getName() {
         return name;
     }
@@ -63,5 +66,13 @@ public class FileEntityDto {
 
     public void setSystemId(String systemId) {
         this.systemId = systemId;
+    }
+
+    public Long getSize() {
+        return size;
+    }
+
+    public void setSize(Long size) {
+        this.size = size;
     }
 }

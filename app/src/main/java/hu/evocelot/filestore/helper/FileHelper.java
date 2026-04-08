@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 
 import hu.evocelot.filestore.exception.BaseException;
 import hu.evocelot.filestore.exception.ExceptionType;
+import hu.evocelot.filestore.pojo.FileStoreResult;
 import hu.evocelot.filestore.properties.FileStoreProperties;
 import jakarta.xml.bind.annotation.adapters.HexBinaryAdapter;
 
@@ -51,21 +52,24 @@ public class FileHelper {
      * @throws Exception if the input parameters are invalid or if an error occurs
      *                   during file saving.
      */
-    public String storeFile(String fullPath, InputStream inputStream) throws Exception {
+    public FileStoreResult storeFile(String fullPath, InputStream inputStream) throws Exception {
         if (StringUtils.isBlank(fullPath) || inputStream == null) {
             throw new BaseException(HttpStatus.BAD_REQUEST, ExceptionType.INVALID_INPUT,
                     "Invalid file path or input stream.");
         }
 
         MessageDigest messageDigest = MessageDigest.getInstance(MD5_DIGEST);
+        long totalSize = 0;
 
         try (DigestInputStream digestInputStream = new DigestInputStream(inputStream, messageDigest);
-                FileOutputStream fileOutputStream = new FileOutputStream(fullPath);) {
+                FileOutputStream fileOutputStream = new FileOutputStream(fullPath)) {
 
             byte[] buffer = new byte[fileStoreProperties.getBufferSize()];
             int bytesRead;
+
             while ((bytesRead = digestInputStream.read(buffer)) != -1) {
                 fileOutputStream.write(buffer, 0, bytesRead);
+                totalSize += bytesRead;
             }
 
             LOG.info("File successfully saved at: " + fullPath);
@@ -74,7 +78,9 @@ public class FileHelper {
         }
 
         byte[] hashBytes = messageDigest.digest();
-        return (new HexBinaryAdapter()).marshal(hashBytes);
+        String hash = (new HexBinaryAdapter()).marshal(hashBytes);
+
+        return new FileStoreResult(hash, totalSize);
     }
 
     /**

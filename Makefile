@@ -41,18 +41,18 @@ start-local-container: create-podman-network stop-local-container build-docker-i
 		--network $(NETWORK_NAME) \
 		-p 8083:8080 \
 		-e TZ=UTC \
-		-e LOGSTASH_ENABLED="true" \
+		-e LOGSTASH_ENABLED="false" \
 		-e LOGSTASH_HOST=$(LOGSTASH_HOST) \
 		-e LOGSTASH_PORT=$(LOGSTASH_PORT) \
-		-e TRACING_ENABLED="true" \
+		-e TRACING_ENABLED="false" \
 		-e TRACING_URL=http://$(JAEGER_HOST):$(JAEGER_TRACING_PORT)/v1/traces \
 		-e KAFKA_ENABLED="true" \
 		-e KAFKA_URL=evocelot-kafka:9092 \
 		-e KAFKA_GROUP_ID=file-group \
-		-e SPRING_DATASOURCE_URL=jdbc:mariadb://evocelot-mariadb:3306/filestore \
-		-e SPRING_DATASOURCE_USERNAME=root \
+		-e SPRING_DATASOURCE_URL=jdbc:postgresql://evocelot-postgres:5432/filestore \
+		-e SPRING_DATASOURCE_USERNAME=admin \
 		-e SPRING_DATASOURCE_PASSWORD=admin \
-		-e SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.mariadb.jdbc.Driver \
+		-e SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver \
 		-e BUFFER_SIZE=8192 \
 		-e MAX_FILE_SIZE=50MB \
 		-e MAX_REQUEST_SIZE=50MB \

@@ -28,6 +28,7 @@ public class FileEntityConverter implements EntityConverter<FileEntity, FileEnti
         destionationEntity.setName(sourceType.getName());
         destionationEntity.setExtension(sourceType.getExtension());
         destionationEntity.setHash(sourceType.getHash());
+        destionationEntity.setSize(sourceType.getSize());
         destionationEntity.setObjectId(sourceType.getObjectId());
         destionationEntity.setSystemId(sourceType.getSystemId());
     }
@@ -46,6 +47,7 @@ public class FileEntityConverter implements EntityConverter<FileEntity, FileEnti
         destinationType.setName(sourceEntity.getName());
         destinationType.setExtension(sourceEntity.getExtension());
         destinationType.setHash(sourceEntity.getHash());
+        destinationType.setSize(sourceEntity.getSize());
         destinationType.setObjectId(sourceEntity.getObjectId());
         destinationType.setSystemId(sourceEntity.getSystemId());
     }

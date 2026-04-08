@@ -15,11 +15,14 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import hu.evocelot.filestore.dto.FileEntityWithIdDto;
+import hu.evocelot.filestore.dto.FileStorageUsageDto;
 import hu.evocelot.filestore.dto.FileUploadRequestDto;
 import hu.evocelot.filestore.service.DeleteFileService;
 import hu.evocelot.filestore.service.DownloadFileService;
 import hu.evocelot.filestore.service.GetFileDetailsService;
+import hu.evocelot.filestore.service.GetFileStorageUsageService;
 import hu.evocelot.filestore.service.ListFileDetailsService;
+import hu.evocelot.filestore.service.RecalculateFileSizesService;
 import hu.evocelot.filestore.service.UploadFileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -35,12 +38,15 @@ public class FileController {
 
 	public FileController(UploadFileService uploadFileService, GetFileDetailsService getFileDetailsService,
 			DownloadFileService downloadFileService, DeleteFileService deleteFileService,
-			ListFileDetailsService listFileDetailsService) {
+			ListFileDetailsService listFileDetailsService, RecalculateFileSizesService recalculateFileSizesService,
+			GetFileStorageUsageService getFileStorageUsageService) {
 		this.uploadFileService = uploadFileService;
 		this.getFileDetailsService = getFileDetailsService;
 		this.downloadFileService = downloadFileService;
 		this.deleteFileService = deleteFileService;
 		this.listFileDetailsService = listFileDetailsService;
+		this.recalculateFileSizesService = recalculateFileSizesService;
+		this.getFileStorageUsageService = getFileStorageUsageService;
 	}
 
 	private final UploadFileService uploadFileService;
@@ -48,6 +54,8 @@ public class FileController {
 	private final DownloadFileService downloadFileService;
 	private final DeleteFileService deleteFileService;
 	private final ListFileDetailsService listFileDetailsService;
+	private final RecalculateFileSizesService recalculateFileSizesService;
+	private final GetFileStorageUsageService getFileStorageUsageService;
 
 	/**
 	 * Handles file upload requests.
@@ -152,5 +160,48 @@ public class FileController {
 			@Parameter(description = FileControllerInformation.FILE_ID_PARAM_DESCRIPTION, required = true) @RequestParam String fileId)
 			throws Exception {
 		return deleteFileService.deleteFile(fileId);
+	}
+
+	/**
+	 * Recalculates the size of all stored files and updates the database.
+	 * <p>
+	 * This endpoint iterates through all file metadata entries in a paginated
+	 * manner, reads the corresponding files from the storage, and recalculates
+	 * their sizes in bytes. The recalculated size is then persisted in the
+	 * database.
+	 * </p>
+	 *
+	 * <h3>Use cases:</h3>
+	 * <ul>
+	 * <li>Data migration or backfill after introducing file size column.</li>
+	 * <li>Repair inconsistent or missing file size values.</li>
+	 * </ul>
+	 *
+	 * @return {@link ResponseEntity} with HTTP 200 status when the process is
+	 *         started/completed.
+	 * @throws Exception if an unexpected error occurs during processing.
+	 */
+	@PostMapping("/recalculate-all-file-sizes")
+	@Operation(summary = FileControllerInformation.RECALCULATE_ALL_FILE_SIZES_SUMMARY, description = FileControllerInformation.RECALCULATE_ALL_FILE_SIZES_DESCRIPTION)
+	public ResponseEntity<Void> recalculateAllFileSizes() throws Exception {
+		recalculateFileSizesService.recalculateAll();
+		return ResponseEntity.ok().build();
+	}
+
+	/**
+	 * Retrieves storage usage information for a given object.
+	 * <p>
+	 * This endpoint calculates the total size of all files associated with the
+	 * given object identifier and returns it יחד with the maximum allowed disk
+	 * space.
+	 * </p>
+	 *
+	 * @param objectId The identifier of the related object.
+	 * @return {@link ResponseEntity} containing storage usage information.
+	 */
+	@GetMapping("/storage-usage")
+	@Operation(summary = FileControllerInformation.GET_STORAGE_USAGE_SUMMARY, description = FileControllerInformation.GET_STORAGE_USAGE_DESCRIPTION)
+	public ResponseEntity<FileStorageUsageDto> getStorageUsage(@RequestParam String objectId) {
+		return ResponseEntity.ok(getFileStorageUsageService.getUsage(objectId));
 	}
 }

@@ -52,6 +52,12 @@ public class FileEntity extends AbstractIdentifiedAuditEntity {
     @Size(max = 100)
     private String systemId;
 
+    /**
+     * File size in bytes
+     */
+    @Column(name = "size", nullable = true)
+    private Long size;
+
     public String getName() {
         return name;
     }
@@ -90,5 +96,17 @@ public class FileEntity extends AbstractIdentifiedAuditEntity {
 
     public void setSystemId(String systemId) {
         this.systemId = systemId;
+    }
+
+    public Long getSize() {
+        return size;
+    }
+
+    public void setSize(Long size) {
+        this.size = size;
+    }
+
+    public double getSizeInMb() {
+        return size != null ? size / (1024.0 * 1024.0) : 0;
     }
 }
