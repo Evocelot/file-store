@@ -13,7 +13,7 @@ import hu.evocelot.filestore.helper.FileHelper;
 import hu.evocelot.filestore.model.FileEntity;
 
 /**
- * Action class responsible for deleting a file and its metadata.
+ * Service class responsible for deleting a file and its metadata.
  * <p>
  * This class provides functionality to remove a stored file and its associated
  * metadata. It interacts with the {@link FileEntityAccessor} to delete the file

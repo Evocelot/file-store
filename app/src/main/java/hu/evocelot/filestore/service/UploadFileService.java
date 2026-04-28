@@ -17,6 +17,7 @@ import hu.evocelot.filestore.helper.FileHelper;
 import hu.evocelot.filestore.kafka.KafkaMessageProducer;
 import hu.evocelot.filestore.kafka.KafkaTopics;
 import hu.evocelot.filestore.model.FileEntity;
+import hu.evocelot.filestore.pojo.FileStoreResult;
 import hu.evocelot.filestore.properties.KafkaProperties;
 
 /**
@@ -92,10 +93,13 @@ public class UploadFileService {
 
         // Create the file
         fileHelper.createDirectoryIfNotExists(directoryPath);
-        String md5Hash = fileHelper.storeFile(fullPath, fileUploadRequestDto.getFile().getInputStream());
+        FileStoreResult result = fileHelper.storeFile(
+                fullPath,
+                fileUploadRequestDto.getFile().getInputStream());
 
         // Update the entity.
-        fileEntity.setHash(md5Hash);
+        fileEntity.setHash(result.getHash());
+        fileEntity.setSize(result.getSize());
         fileEntity = fileEntityAccessor.save(fileEntity);
 
         if (kafkaProperties.getEnabled().equals("true")) {
