@@ -50,6 +50,16 @@ public class FileControllerInformation {
     /**
      * {@value}.
      */
+    public static final String DOWNLOAD_SECURE_FILE_SUMMARY = "Download secure file";
+
+    /**
+     * {@value}.
+     */
+    public static final String DOWNLOAD_SECURE_FILE_DESCRIPTION = "Endpoint for downloading a secure file.";
+
+    /**
+     * {@value}.
+     */
     public static final String DELETE_FILE_SUMMARY = "Delete file";
 
     /**

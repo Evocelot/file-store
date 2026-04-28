@@ -2,6 +2,7 @@ package hu.evocelot.filestore.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
@@ -11,10 +12,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import hu.evocelot.filestore.accessor.FileEntityAccessor;
+import hu.evocelot.filestore.dto.PasswordDto;
 import hu.evocelot.filestore.exception.BaseException;
 import hu.evocelot.filestore.exception.ExceptionType;
 import hu.evocelot.filestore.helper.FileHelper;
@@ -34,13 +37,16 @@ public class DownloadFileService {
 
     private static final Logger LOG = LogManager.getLogger(DownloadFileService.class);
 
-    public DownloadFileService(FileEntityAccessor fileEntityAccessor, FileHelper fileHelper) {
+    public DownloadFileService(FileEntityAccessor fileEntityAccessor, FileHelper fileHelper,
+            PasswordEncoder passwordEncoder) {
         this.fileEntityAccessor = fileEntityAccessor;
         this.fileHelper = fileHelper;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    private FileEntityAccessor fileEntityAccessor;
-    private FileHelper fileHelper;
+    private final FileEntityAccessor fileEntityAccessor;
+    private final FileHelper fileHelper;
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * Downloads a file based on its unique identifier.
@@ -57,7 +63,8 @@ public class DownloadFileService {
      *         {@link StreamingResponseBody}
      * @throws Exception when error occurs.
      */
-    public ResponseEntity<StreamingResponseBody> downloadFile(String fileId, boolean checkHash) throws Exception {
+    public ResponseEntity<StreamingResponseBody> downloadFile(String fileId, boolean checkHash, PasswordDto passwordDto)
+            throws Exception {
         // Get the file entity.
         Optional<FileEntity> optionalFileEntity = fileEntityAccessor.findById(fileId);
         if (optionalFileEntity.isEmpty()) {
@@ -66,6 +73,16 @@ public class DownloadFileService {
         }
 
         FileEntity fileEntity = optionalFileEntity.get();
+
+        if (fileEntity.getPasswordHash() != null) {
+            if (Objects.isNull(passwordDto) || Objects.isNull(passwordDto.getPassword())) {
+                throw new RuntimeException("Password is mandatory for this file");
+            }
+            if (!passwordEncoder.matches(passwordDto.getPassword(), fileEntity.getPasswordHash())) {
+                throw new RuntimeException("Invalid password");
+            }
+        }
+
         String directoryPath = fileHelper.getDirectoryPath(fileEntity.getSystemId());
         String fullPath = fileHelper.getFullPath(directoryPath, fileId, fileEntity.getExtension());
 

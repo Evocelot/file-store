@@ -57,6 +57,13 @@ public class FileEntity extends AbstractIdentifiedAuditEntity {
      */
     @Column(name = "size", nullable = true)
     private Long size;
+  
+     /**
+     * Bcrypt hash of the file
+     */
+    @Column(name = "password_hash", length = 100, nullable = true)
+    @Size(max = 100)
+    private String passwordHash;
 
     public String getName() {
         return name;
@@ -108,5 +115,13 @@ public class FileEntity extends AbstractIdentifiedAuditEntity {
 
     public double getSizeInMb() {
         return size != null ? size / (1024.0 * 1024.0) : 0;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 }
