@@ -31,6 +31,8 @@ import io.swagger.v3.oas.annotations.Parameter;
 /**
  * REST controller responsible for managing file-related operations.
  * 
+ * SZOJKODO
+ * 
  * @author mark.danisovszky
  */
 @RestController
@@ -137,10 +139,10 @@ public class FileController {
 	@Operation(summary = FileControllerInformation.DOWNLOAD_FILE_SUMMARY, description = FileControllerInformation.DOWNLOAD_FILE_DESCRIPTION)
 	public ResponseEntity<StreamingResponseBody> downloadFile(
 			@Parameter(description = FileControllerInformation.FILE_ID_PARAM_DESCRIPTION, required = true) @RequestParam String fileId,
-			@Parameter(description = FileControllerInformation.CHECK_HASH_PARAM_DESCRIPTION, required = true) @RequestParam boolean checkHash)
-
+			@Parameter(description = FileControllerInformation.CHECK_HASH_PARAM_DESCRIPTION, required = true) @RequestParam boolean checkHash,
+			@Parameter(description = "...", required = false) @RequestParam(defaultValue = "false") boolean preview)
 			throws Exception {
-		return downloadFileService.downloadFile(fileId, checkHash, null);
+		return downloadFileService.downloadFile(fileId, checkHash, null, preview);
 	}
 
 	/**
@@ -161,7 +163,7 @@ public class FileController {
 			PasswordDto passwordDto)
 
 			throws Exception {
-		return downloadFileService.downloadFile(fileId, checkHash, passwordDto);
+		return downloadFileService.downloadFile(fileId, checkHash, passwordDto, false);
 	}
 
 	/**

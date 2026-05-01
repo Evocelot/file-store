@@ -57,9 +57,6 @@ start-local-container: create-podman-network stop-local-container build-docker-i
 		-e MAX_FILE_SIZE=50MB \
 		-e MAX_REQUEST_SIZE=50MB \
 		-v ./stored-files:/store \
-  		--cpus="0.5" \
-  		--memory="512m" \
-  		--memory-swap="512m" \
 		$(IMAGE_NAME); \
 		\
 	@echo "$(APPNAME) started at: http://localhost:8083\nThe swagger UI can be accessed at: http://localhost:8083/file-store/swagger-ui/index.html"

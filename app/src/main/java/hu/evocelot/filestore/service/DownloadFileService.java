@@ -63,7 +63,8 @@ public class DownloadFileService {
      *         {@link StreamingResponseBody}
      * @throws Exception when error occurs.
      */
-    public ResponseEntity<StreamingResponseBody> downloadFile(String fileId, boolean checkHash, PasswordDto passwordDto)
+    public ResponseEntity<StreamingResponseBody> downloadFile(String fileId, boolean checkHash, PasswordDto passwordDto,
+            boolean preview)
             throws Exception {
         // Get the file entity.
         Optional<FileEntity> optionalFileEntity = fileEntityAccessor.findById(fileId);
@@ -101,6 +102,11 @@ public class DownloadFileService {
                 throw new BaseException(HttpStatus.CONFLICT, ExceptionType.CORRUPTED_FILE,
                         "Corrupted file!");
             }
+        }
+
+        if (!preview) {
+            fileEntity.setDownloadCount(fileEntity.getDownloadCount() + 1);
+            fileEntityAccessor.save(fileEntity);
         }
 
         // Streaming the file as a response.
