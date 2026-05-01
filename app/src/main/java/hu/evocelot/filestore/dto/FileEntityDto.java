@@ -28,6 +28,9 @@ public class FileEntityDto {
     @Schema(description = "The size of the file in bytes", required = false)
     private Long size;
 
+    @Schema(description = "Number of the downloads", required = true)
+    private Long downloadCounter;
+
     public String getName() {
         return name;
     }
@@ -74,5 +77,13 @@ public class FileEntityDto {
 
     public void setSize(Long size) {
         this.size = size;
+    }
+
+    public Long getDownloadCounter() {
+        return downloadCounter;
+    }
+
+    public void setDownloadCounter(Long downloadCounter) {
+        this.downloadCounter = downloadCounter;
     }
 }

@@ -31,6 +31,7 @@ public class FileEntityConverter implements EntityConverter<FileEntity, FileEnti
         destionationEntity.setSize(sourceType.getSize());
         destionationEntity.setObjectId(sourceType.getObjectId());
         destionationEntity.setSystemId(sourceType.getSystemId());
+        destionationEntity.setDownloadCount(sourceType.getDownloadCounter());
     }
 
     @Override
@@ -50,5 +51,6 @@ public class FileEntityConverter implements EntityConverter<FileEntity, FileEnti
         destinationType.setSize(sourceEntity.getSize());
         destinationType.setObjectId(sourceEntity.getObjectId());
         destinationType.setSystemId(sourceEntity.getSystemId());
+        destinationType.setDownloadCounter(sourceEntity.getDownloadCount());
     }
 }

@@ -17,6 +17,10 @@ import jakarta.validation.constraints.Size;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class FileEntity extends AbstractIdentifiedAuditEntity {
 
+    public FileEntity() {
+        this.downloadCount = 0L;
+    }
+
     /**
      * The name of the file (used as filename)
      */
@@ -57,13 +61,19 @@ public class FileEntity extends AbstractIdentifiedAuditEntity {
      */
     @Column(name = "size", nullable = true)
     private Long size;
-  
-     /**
+
+    /**
      * Bcrypt hash of the file
      */
     @Column(name = "password_hash", length = 100, nullable = true)
     @Size(max = 100)
     private String passwordHash;
+
+    /**
+     * 
+     */
+    @Column(name = "download_count", nullable = false)
+    private Long downloadCount;
 
     public String getName() {
         return name;
@@ -123,5 +133,13 @@ public class FileEntity extends AbstractIdentifiedAuditEntity {
 
     public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
+    }
+
+    public Long getDownloadCount() {
+        return downloadCount;
+    }
+
+    public void setDownloadCount(Long downloadCount) {
+        this.downloadCount = downloadCount;
     }
 }
