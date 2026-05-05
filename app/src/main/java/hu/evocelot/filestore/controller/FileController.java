@@ -9,12 +9,15 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import hu.evocelot.filestore.dto.FileEntityWithIdDto;
+import hu.evocelot.filestore.dto.FileStorageLimitRequestDto;
 import hu.evocelot.filestore.dto.FileStorageUsageDto;
 import hu.evocelot.filestore.dto.FileUploadRequestDto;
 import hu.evocelot.filestore.dto.PasswordDto;
@@ -24,6 +27,7 @@ import hu.evocelot.filestore.service.GetFileDetailsService;
 import hu.evocelot.filestore.service.GetFileStorageUsageService;
 import hu.evocelot.filestore.service.ListFileDetailsService;
 import hu.evocelot.filestore.service.RecalculateFileSizesService;
+import hu.evocelot.filestore.service.SetFileStorageLimitService;
 import hu.evocelot.filestore.service.UploadFileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -42,7 +46,8 @@ public class FileController {
 	public FileController(UploadFileService uploadFileService, GetFileDetailsService getFileDetailsService,
 			DownloadFileService downloadFileService, DeleteFileService deleteFileService,
 			ListFileDetailsService listFileDetailsService, RecalculateFileSizesService recalculateFileSizesService,
-			GetFileStorageUsageService getFileStorageUsageService) {
+			GetFileStorageUsageService getFileStorageUsageService,
+			SetFileStorageLimitService setFileStorageLimitService) {
 		this.uploadFileService = uploadFileService;
 		this.getFileDetailsService = getFileDetailsService;
 		this.downloadFileService = downloadFileService;
@@ -50,6 +55,7 @@ public class FileController {
 		this.listFileDetailsService = listFileDetailsService;
 		this.recalculateFileSizesService = recalculateFileSizesService;
 		this.getFileStorageUsageService = getFileStorageUsageService;
+		this.setFileStorageLimitService = setFileStorageLimitService;
 	}
 
 	private final UploadFileService uploadFileService;
@@ -59,6 +65,7 @@ public class FileController {
 	private final ListFileDetailsService listFileDetailsService;
 	private final RecalculateFileSizesService recalculateFileSizesService;
 	private final GetFileStorageUsageService getFileStorageUsageService;
+	private final SetFileStorageLimitService setFileStorageLimitService;
 
 	/**
 	 * Handles file upload requests.
@@ -228,5 +235,30 @@ public class FileController {
 	@Operation(summary = FileControllerInformation.GET_STORAGE_USAGE_SUMMARY, description = FileControllerInformation.GET_STORAGE_USAGE_DESCRIPTION)
 	public ResponseEntity<FileStorageUsageDto> getStorageUsage(@RequestParam String objectId) {
 		return ResponseEntity.ok(getFileStorageUsageService.getUsage(objectId));
+	}
+
+	/**
+	 * Sets or updates the maximum allowed disk space for a given object id.
+	 * <p>
+	 * This endpoint allows clients to define a storage limit associated with a
+	 * specific object identifier (e.g. clientId). If a limit already exists for the
+	 * given object, it will be overwritten with the new value. Otherwise, a new
+	 * limit entry will be created.
+	 * </p>
+	 *
+	 * @param request DTO containing the object identifier and the maximum allowed
+	 *                disk space in bytes
+	 * @return {@link ResponseEntity} with HTTP 200 status when the operation is
+	 *         successful
+	 */
+	@PutMapping("/storage-limit")
+	@Operation(summary = "Set storage limit", description = "Sets or updates max disk space for a given objectId")
+	public ResponseEntity<Void> setStorageLimit(@RequestBody FileStorageLimitRequestDto request) {
+
+		setFileStorageLimitService.setLimit(
+				request.getObjectId(),
+				request.getMaxDiskSpace());
+
+		return ResponseEntity.ok().build();
 	}
 }
