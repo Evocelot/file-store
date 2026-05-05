@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 import hu.evocelot.filestore.dto.FileStorageUsageDto;
 import hu.evocelot.filestore.repository.FileRepository;
+import hu.evocelot.filestore.repository.FileStorageLimitRepository;
 
 /**
  * Service responsible for calculating storage usage for files belonging to a
@@ -17,11 +18,13 @@ import hu.evocelot.filestore.repository.FileRepository;
 public class GetFileStorageUsageService {
 
     private final FileRepository fileRepository;
+    private final FileStorageLimitRepository limitRepository;
 
-    private static final long MAX_DISK_SPACE = 1024L * 1024L * 1024L; // 1 GB
+    private static final long DEFAULT_MAX_DISK_SPACE = 1024L * 1024L * 1024L; // 1 GB
 
-    public GetFileStorageUsageService(FileRepository fileRepository) {
+    public GetFileStorageUsageService(FileRepository fileRepository, FileStorageLimitRepository limitRepository) {
         this.fileRepository = fileRepository;
+        this.limitRepository = limitRepository;
     }
 
     /**
@@ -35,6 +38,9 @@ public class GetFileStorageUsageService {
         Long used = fileRepository.sumSizeByObjectId(objectId);
         long usedDiskSpace = used != null ? used : 0L;
 
-        return new FileStorageUsageDto(MAX_DISK_SPACE, usedDiskSpace);
+        Long max = limitRepository.findMaxDiskSpaceByObjectId(objectId);
+        long maxDiskSpace = max != null ? max : DEFAULT_MAX_DISK_SPACE;
+
+        return new FileStorageUsageDto(maxDiskSpace, usedDiskSpace);
     }
 }
