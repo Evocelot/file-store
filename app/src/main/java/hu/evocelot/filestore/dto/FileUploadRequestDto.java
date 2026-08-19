@@ -29,6 +29,9 @@ public class FileUploadRequestDto {
     @Schema(description = "The optional password", required = false, maxLength = 50)
     private String password;
 
+    @Schema(description = "The optional label of the file", required = false, maxLength = 50)
+    private String label;
+
     public String getName() {
         return name;
     }
@@ -75,5 +78,13 @@ public class FileUploadRequestDto {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 }

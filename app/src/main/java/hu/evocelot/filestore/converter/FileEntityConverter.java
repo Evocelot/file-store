@@ -52,5 +52,6 @@ public class FileEntityConverter implements EntityConverter<FileEntity, FileEnti
         destinationType.setObjectId(sourceEntity.getObjectId());
         destinationType.setSystemId(sourceEntity.getSystemId());
         destinationType.setDownloadCounter(sourceEntity.getDownloadCount());
+        destinationType.setLabel(sourceEntity.getLabel());
     }
 }

@@ -49,12 +49,16 @@ public class ListFileDetailsService {
      * @return a {@link PaginatedResponse} containing file metadata DTOs
      * @throws BaseException if an error occurs during retrieval
      */
-    public PaginatedResponse<FileEntityWithIdDto> list(String objectId, Pageable pageable)
+    public PaginatedResponse<FileEntityWithIdDto> list(String objectId, String label, Pageable pageable)
             throws BaseException {
-        Specification<FileEntity> spec = null;
+        Specification<FileEntity> spec = Specification.where(null);
 
         if (StringUtils.isNotBlank(objectId)) {
-            spec = filterObjectId(objectId);
+            spec = spec.and(filterObjectId(objectId));
+        }
+
+        if (StringUtils.isNoneBlank(label)) {
+            spec = spec.and(filterLabel(label));
         }
 
         Page<FileEntity> pageResult;
@@ -81,5 +85,9 @@ public class ListFileDetailsService {
 
     private Specification<FileEntity> filterObjectId(String objectId) {
         return (root, query, cb) -> cb.equal(root.get("objectId"), objectId);
+    }
+
+    private Specification<FileEntity> filterLabel(String label) {
+        return (root, query, cb) -> cb.equal(root.get("label"), label);
     }
 }

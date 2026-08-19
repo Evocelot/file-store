@@ -44,7 +44,8 @@ public class UploadFileService {
 
     public UploadFileService(FileEntityWithIdConverter fileEntityWithIdConverter, FileEntityAccessor fileEntityAccessor,
             FileHelper fileHelper, KafkaProperties kafkaProperties, ObjectMapper objectMapper,
-            @Nullable KafkaMessageProducer kafkaMessageProducer, PasswordEncoder passwordEncoder) {
+            @Nullable KafkaMessageProducer kafkaMessageProducer, PasswordEncoder passwordEncoder,
+            FileStorageLimitService fileStorageLimitService) {
         this.fileEntityWithIdConverter = fileEntityWithIdConverter;
         this.fileEntityAccessor = fileEntityAccessor;
         this.fileHelper = fileHelper;
@@ -52,6 +53,7 @@ public class UploadFileService {
         this.objectMapper = objectMapper;
         this.kafkaMessageProducer = kafkaMessageProducer;
         this.passwordEncoder = passwordEncoder;
+        this.fileStorageLimitService = fileStorageLimitService;
     }
 
     private final FileEntityWithIdConverter fileEntityWithIdConverter;
@@ -61,6 +63,7 @@ public class UploadFileService {
     private final ObjectMapper objectMapper;
     private final KafkaMessageProducer kafkaMessageProducer;
     private final PasswordEncoder passwordEncoder;
+    private final FileStorageLimitService fileStorageLimitService;
 
     /**
      * Handles the logic for processing a file upload.
@@ -71,12 +74,19 @@ public class UploadFileService {
      * @throws Exception if an error occurs during file upload or processing.
      */
     public ResponseEntity<FileEntityWithIdDto> uploadFile(FileUploadRequestDto fileUploadRequestDto) throws Exception {
+        long fileSize = fileUploadRequestDto.getFile().getSize();
+
+        fileStorageLimitService.reserveStorage(
+                fileUploadRequestDto.getObjectId(),
+                fileSize);
+
         // Create the entity.
         FileEntity fileEntity = new FileEntity();
         fileEntity.setName(fileUploadRequestDto.getName());
         fileEntity.setExtension(fileUploadRequestDto.getExtension());
         fileEntity.setObjectId(fileUploadRequestDto.getObjectId());
         fileEntity.setSystemId(fileUploadRequestDto.getSystemId());
+        fileEntity.setLabel(fileUploadRequestDto.getLabel());
 
         String passwordFromRequest = fileUploadRequestDto.getPassword();
         if (StringUtils.isNotBlank(passwordFromRequest)) {
