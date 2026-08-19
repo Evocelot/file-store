@@ -31,6 +31,9 @@ public class FileEntityDto {
     @Schema(description = "Number of the downloads", required = true)
     private Long downloadCounter;
 
+    @Schema(description = "File label", required = false, maxLength = 100)
+    private String label;
+
     public String getName() {
         return name;
     }
@@ -85,5 +88,13 @@ public class FileEntityDto {
 
     public void setDownloadCounter(Long downloadCounter) {
         this.downloadCounter = downloadCounter;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 }

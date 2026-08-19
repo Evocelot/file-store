@@ -38,6 +38,12 @@ public class FileStorageLimit extends AbstractIdentifiedAuditEntity {
     @Column(name = "MAX_DISK_SPACE", nullable = true)
     private Long maxDiskSpace;
 
+    /**
+     * Used disk space
+     */
+    @Column(name = "USED_DISK_SPACE", nullable = true)
+    private Long usedDiskSpace;
+
     public String getObjectId() {
         return objectId;
     }
@@ -54,4 +60,11 @@ public class FileStorageLimit extends AbstractIdentifiedAuditEntity {
         this.maxDiskSpace = maxDiskSpace;
     }
 
+    public Long getUsedDiskSpace() {
+        return usedDiskSpace;
+    }
+
+    public void setUsedDiskSpace(Long usedDiskSpace) {
+        this.usedDiskSpace = usedDiskSpace;
+    }
 }

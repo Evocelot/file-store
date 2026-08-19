@@ -96,4 +96,14 @@ public class FileControllerInformation {
      * {@value}.
      */
     public static final String GET_STORAGE_USAGE_DESCRIPTION = "Returns the total used disk space for the given objectId and the maximum allowed disk space (currently fixed to 1 GB).";
+
+    /**
+     * {@value}.
+     */
+    public static final String RECALCULATE_ALL_USED_STORAGE_SUMMARY = "Recalculate all used storage";
+
+    /**
+     * {@value}.
+     */
+    public static final String RECALCULATE_ALL_USED_STORAGE_DESCRIPTION = "Recalculate all used storage for all objectIds based on the actual file sizes in the database.";
 }

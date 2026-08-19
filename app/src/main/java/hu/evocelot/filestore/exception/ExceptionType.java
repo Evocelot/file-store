@@ -45,4 +45,9 @@ public enum ExceptionType {
      * {@value}.
      */
     CANNOT_CALCULATE_MD5,
+
+    /**
+     * {@value}.
+     */
+    STORAGE_LIMIT_EXCEEDED,
 }

@@ -75,6 +75,13 @@ public class FileEntity extends AbstractIdentifiedAuditEntity {
     @Column(name = "download_count", nullable = false)
     private Long downloadCount;
 
+    /**
+     * Label of the file.
+     */
+    @Column(name = "label", length = 100, nullable = true)
+    @Size(max = 100)
+    private String label;
+
     public String getName() {
         return name;
     }
@@ -141,5 +148,13 @@ public class FileEntity extends AbstractIdentifiedAuditEntity {
 
     public void setDownloadCount(Long downloadCount) {
         this.downloadCount = downloadCount;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 }

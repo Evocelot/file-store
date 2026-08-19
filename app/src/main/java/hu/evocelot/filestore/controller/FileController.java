@@ -27,6 +27,7 @@ import hu.evocelot.filestore.service.GetFileDetailsService;
 import hu.evocelot.filestore.service.GetFileStorageUsageService;
 import hu.evocelot.filestore.service.ListFileDetailsService;
 import hu.evocelot.filestore.service.RecalculateFileSizesService;
+import hu.evocelot.filestore.service.RecalculateUsedStorageService;
 import hu.evocelot.filestore.service.SetFileStorageLimitService;
 import hu.evocelot.filestore.service.UploadFileService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -47,7 +48,8 @@ public class FileController {
 			DownloadFileService downloadFileService, DeleteFileService deleteFileService,
 			ListFileDetailsService listFileDetailsService, RecalculateFileSizesService recalculateFileSizesService,
 			GetFileStorageUsageService getFileStorageUsageService,
-			SetFileStorageLimitService setFileStorageLimitService) {
+			SetFileStorageLimitService setFileStorageLimitService,
+			RecalculateUsedStorageService recalculateUsedStorageService) {
 		this.uploadFileService = uploadFileService;
 		this.getFileDetailsService = getFileDetailsService;
 		this.downloadFileService = downloadFileService;
@@ -56,6 +58,7 @@ public class FileController {
 		this.recalculateFileSizesService = recalculateFileSizesService;
 		this.getFileStorageUsageService = getFileStorageUsageService;
 		this.setFileStorageLimitService = setFileStorageLimitService;
+		this.recalculateUsedStorageService = recalculateUsedStorageService;
 	}
 
 	private final UploadFileService uploadFileService;
@@ -66,6 +69,7 @@ public class FileController {
 	private final RecalculateFileSizesService recalculateFileSizesService;
 	private final GetFileStorageUsageService getFileStorageUsageService;
 	private final SetFileStorageLimitService setFileStorageLimitService;
+	private final RecalculateUsedStorageService recalculateUsedStorageService;
 
 	/**
 	 * Handles file upload requests.
@@ -124,12 +128,13 @@ public class FileController {
 	@Operation(summary = FileControllerInformation.GET_FILE_DETAILS_LIST_SUMMARY, description = FileControllerInformation.GET_FILE_DETAILS_LIST_DESCRIPTION)
 	public ResponseEntity<?> getFileDetailsList(@RequestParam int page,
 			@RequestParam int size,
-			@RequestParam String objectId)
+			@RequestParam String objectId,
+			@RequestParam(required = false) String label)
 			throws Exception {
 		Pageable pageable = PageRequest.of(page, size, Sort.by("insDate").descending());
 
 		return ResponseEntity
-				.ok(listFileDetailsService.list(objectId, pageable));
+				.ok(listFileDetailsService.list(objectId, label, pageable));
 	}
 
 	/**
@@ -217,6 +222,15 @@ public class FileController {
 	@Operation(summary = FileControllerInformation.RECALCULATE_ALL_FILE_SIZES_SUMMARY, description = FileControllerInformation.RECALCULATE_ALL_FILE_SIZES_DESCRIPTION)
 	public ResponseEntity<Void> recalculateAllFileSizes() throws Exception {
 		recalculateFileSizesService.recalculateAll();
+		return ResponseEntity.ok().build();
+	}
+
+	@PostMapping("/recalculate-all-used-storage")
+	@Operation(summary = FileControllerInformation.RECALCULATE_ALL_USED_STORAGE_SUMMARY, description = FileControllerInformation.RECALCULATE_ALL_USED_STORAGE_DESCRIPTION)
+	public ResponseEntity<Void> recalculateAllUsedStorage() throws Exception {
+
+		recalculateUsedStorageService.recalculateAll();
+
 		return ResponseEntity.ok().build();
 	}
 
