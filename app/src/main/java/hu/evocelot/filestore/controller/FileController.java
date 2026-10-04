@@ -128,7 +128,7 @@ public class FileController {
 	@Operation(summary = FileControllerInformation.GET_FILE_DETAILS_LIST_SUMMARY, description = FileControllerInformation.GET_FILE_DETAILS_LIST_DESCRIPTION)
 	public ResponseEntity<?> getFileDetailsList(@RequestParam int page,
 			@RequestParam int size,
-			@RequestParam String objectId,
+			@RequestParam(required = false) String objectId,
 			@RequestParam(required = false) String label)
 			throws Exception {
 		Pageable pageable = PageRequest.of(page, size, Sort.by("insDate").descending());

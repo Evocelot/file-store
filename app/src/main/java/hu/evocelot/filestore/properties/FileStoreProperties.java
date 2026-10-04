@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 public class FileStoreProperties {
     private String storePath;
     private int bufferSize;
+    private boolean storageLimitEnabled;
 
     public String getStorePath() {
         return storePath;
@@ -28,5 +29,13 @@ public class FileStoreProperties {
 
     public void setBufferSize(int bufferSize) {
         this.bufferSize = bufferSize;
+    }
+
+    public boolean isStorageLimitEnabled() {
+        return storageLimitEnabled;
+    }
+
+    public void setStorageLimitEnabled(boolean storageLimitEnabled) {
+        this.storageLimitEnabled = storageLimitEnabled;
     }
 }
