@@ -53,12 +53,19 @@ public class ListFileDetailsService {
             throws BaseException {
         Specification<FileEntity> spec = Specification.where(null);
 
-        if (StringUtils.isNotBlank(objectId)) {
-            spec = spec.and(filterObjectId(objectId));
-        }
+        boolean hasObjectId = StringUtils.isNotBlank(objectId);
+        boolean hasLabel = StringUtils.isNotBlank(label);
 
-        if (StringUtils.isNoneBlank(label)) {
-            spec = spec.and(filterLabel(label));
+        if (hasObjectId && hasLabel) {
+            spec = filterObjectId(objectId).or(filterLabel(label));
+        } else {
+            if (hasObjectId) {
+                spec = spec.and(filterObjectId(objectId));
+            }
+
+            if (hasLabel) {
+                spec = spec.and(filterLabel(label));
+            }
         }
 
         Page<FileEntity> pageResult;
